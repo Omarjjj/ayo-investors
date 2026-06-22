@@ -456,7 +456,7 @@ const DIFFERENTIATORS = [
 function WhyDifferent() {
   return (
     <Slide>
-      <Head no="02 / 15" title="Why AYO Is Different" />
+      <Head no="02 / 16" title="Why AYO Is Different" />
       <div className="cols-2">
         <div className="stack gap-md">
           <h2 className="headline r">
@@ -544,7 +544,7 @@ function Mark({ state }) {
 function Landscape() {
   return (
     <Slide>
-      <Head no="03 / 15" title="The Landscape" />
+      <Head no="03 / 16" title="The Landscape" />
       <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '4px' }}>
         Rivals do pieces of this.{' '}
         <span className="grad">AYO ships it as one layer.</span>
@@ -596,7 +596,7 @@ function Landscape() {
 function Problem() {
   return (
     <Slide>
-      <Head no="04 / 15" title="The Problem" />
+      <Head no="04 / 16" title="The Problem" />
       <div className="cols-2">
         <h2 className="headline r">
           AI is powerful — but it still lives <span className="grad">outside</span>{' '}
@@ -632,7 +632,7 @@ const SURFACES = [
 function Product() {
   return (
     <Slide>
-      <Head no="05 / 15" title="The Product" />
+      <Head no="05 / 16" title="The Product" />
       <div className="cols-2">
         <div className="stack gap-md">
           <h2 className="statement r">
@@ -793,7 +793,7 @@ function WhyNowVisual() {
 function WhyNow() {
   return (
     <Slide>
-      <Head no="06 / 15" title="Why Now" />
+      <Head no="06 / 16" title="Why Now" />
       <div className="cols-2">
         <div className="stack gap-md">
           <h2 className="headline r">
@@ -895,7 +895,7 @@ function JourneyFlow() {
 function EarlySignal() {
   return (
     <Slide>
-      <Head no="07 / 15" title="Early Signal" />
+      <Head no="07 / 16" title="Early Signal" />
       <div className="cols-2" style={{ alignItems: 'start' }}>
         <h2 className="headline r" style={{ fontSize: 'clamp(26px, 3.4vw, 50px)' }}>
           People saw a desktop AI product on mobile, couldn’t use it —{' '}
@@ -932,7 +932,7 @@ function EarlySignal() {
 function Learned() {
   return (
     <Slide>
-      <Head no="08 / 15" title="What We Learned" />
+      <Head no="08 / 16" title="What We Learned" />
       <div className="cols-2">
         <h2 className="headline r">
           AYO is a <span className="grad">visual</span> product.
@@ -978,7 +978,7 @@ const CHANNELS = [
 function Growth() {
   return (
     <Slide>
-      <Head no="09 / 15" title="Growth Strategy" />
+      <Head no="09 / 16" title="Growth Strategy" />
       <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
         {CHANNELS.map(([no, title, desc]) => (
           <div className="card" key={no}>
@@ -1010,7 +1010,7 @@ const PHASES = [
 function Model() {
   return (
     <Slide>
-      <Head no="10 / 15" title="12-Month Growth Model" />
+      <Head no="10 / 16" title="12-Month Growth Model" />
       <div className="cols-2">
         <div className="stack gap-sm">
           <h2 className="statement r">
@@ -1060,7 +1060,7 @@ const LADDER = [
 function Raise() {
   return (
     <Slide>
-      <Head no="11 / 15" title="The Raise" />
+      <Head no="11 / 16" title="The Raise" />
       <div className="cols-2">
         <div className="stack gap-md">
           <span className="kicker r">AYO’s pre-seed launch · round open</span>
@@ -1117,7 +1117,7 @@ function Funds() {
   const segments = FUNDS.map(([label, , pct, color]) => ({ label, pct, color }))
   return (
     <Slide>
-      <Head no="12 / 15" title="Use of Funds" />
+      <Head no="12 / 16" title="Use of Funds" />
       <div className="cols-2" style={{ gridTemplateColumns: '0.8fr 1.2fr' }}>
         <div className="r" style={{ justifySelf: 'center' }}>
           <PieChart segments={segments} />
@@ -1156,7 +1156,7 @@ const REACTIONS = [
 function Spread() {
   return (
     <Slide>
-      <Head no="13 / 15" title="Why AYO Can Spread" />
+      <Head no="13 / 16" title="Why AYO Can Spread" />
       <div className="cols-2">
         <div className="r">
           <RotatingQuote items={REACTIONS} />
@@ -1196,7 +1196,7 @@ const FUTURE = [
 function Future() {
   return (
     <Slide>
-      <Head no="14 / 15" title="Future Plans" />
+      <Head no="14 / 16" title="Future Plans" />
       <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         {FUTURE.map(([no, title, desc]) => (
           <div className="card" key={no}>
@@ -1214,7 +1214,47 @@ function Future() {
   )
 }
 
-/* ── 13 · Closing ───────────────────────────────────────── */
+/* ── 15 · The Team ──────────────────────────────────────── */
+const TEAM = [
+  [
+    '01',
+    'Omar — Founder & CEO',
+    'Sets the vision and direction for AYO. Leads on product strategy, fundraising, and the partnerships that move the company forward, keeping the team pointed at what matters most.',
+  ],
+  [
+    '02',
+    'Ayman — Co-Founder & COO/CFO',
+    'Runs operations and finances. Turns the vision into a working plan: budgets, growth, and the day-to-day machinery that keeps AYO shipping and sustainable.',
+  ],
+  [
+    '03',
+    'Yazan — Co-Founder & CTO',
+    "Architects AYO's desktop platform and leads engineering, building the on device, privacy-first foundation the product is known for.",
+  ],
+  [
+    '04',
+    'Marketing & Development Team — Ahmad, Qusay & Qais',
+    "The hands assisting and spreading AYO. From engineering features to getting the product in front of the people who'll love it, this team keeps development and growth moving in parallel.",
+  ],
+]
+function Team() {
+  return (
+    <Slide>
+      <Head no="15 / 16" title="The Team" />
+      <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+        {TEAM.map(([no, title, desc]) => (
+          <div className="card" key={no}>
+            <span className="card__no">{no}</span>
+            <span className="card__title">{title}</span>
+            <span className="card__desc">{desc}</span>
+          </div>
+        ))}
+      </div>
+    </Slide>
+  )
+}
+
+/* ── 16 · Closing ───────────────────────────────────────── */
 const LINKS = [
   ['Website', 'heyayo.com', 'https://heyayo.com/'],
   ['Instagram', '@ayosystems', 'https://www.instagram.com/ayosystems'],
@@ -1266,5 +1306,6 @@ export const SLIDES = [
   { id: 'funds', title: 'Use of Funds', Component: Funds },
   { id: 'spread', title: 'Why AYO Spreads', Component: Spread },
   { id: 'future', title: 'Future Plans', Component: Future },
+  { id: 'team', title: 'The Team', Component: Team },
   { id: 'closing', title: 'Closing', Component: Closing },
 ]
