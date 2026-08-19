@@ -176,7 +176,7 @@ export default function App() {
         <b>{String(index + 1).padStart(2, '0')}</b>&nbsp;/&nbsp;{String(TOTAL).padStart(2, '0')}
       </div>
       <div className="chrome chrome--bl">{SLIDES[index].title}</div>
-      <div className="chrome chrome--br">Pre-Seed · SAFE</div>
+      <div className="chrome chrome--br">Confidential · Sadu Capital</div>
 
       {/* nav dots */}
       <nav className="dots" aria-label="Slide navigation">

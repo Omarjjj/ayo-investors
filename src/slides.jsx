@@ -3,6 +3,30 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { useReveal } from './hooks/useReveal'
 
+/* Slide order drives the numbering shown in every slide head, so adding or
+   removing a slide never leaves a stale "NN / NN" behind. */
+const ORDER = [
+  'opening',
+  'problem',
+  'product',
+  'how',
+  'experience',
+  'why-now',
+  'market',
+  'traction',
+  'model',
+  'positioning',
+  'gtm',
+  'validation',
+  'roadmap',
+  'team',
+  'round',
+  'appendix',
+  'closing',
+]
+
+const pad = (n) => String(n).padStart(2, '0')
+
 /* Shared shell: paints the Swiss frame and runs the staggered entrance. */
 function Slide({ children }) {
   const scope = useReveal()
@@ -29,60 +53,78 @@ function Slide({ children }) {
   )
 }
 
-/* ── Animated hero demo: AYO's hover-highlight in action ─── */
+function Head({ id, title }) {
+  const no = ORDER.indexOf(id) + 1
+  return (
+    <div className="slide-head r">
+      <span className="section-no">
+        {pad(no)} / {pad(ORDER.length)}
+      </span>
+      <span className="title">{title}</span>
+    </div>
+  )
+}
+
+function Panel({ tag, title, children, accent }) {
+  return (
+    <div className={`panel${accent ? ' panel--accent' : ''}`}>
+      {tag && <span className="panel__tag">{tag}</span>}
+      {title && <h3 className="panel__title">{title}</h3>}
+      {children}
+    </div>
+  )
+}
+
+const reduced = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/* ── Animated hero: AYO reading the user's workspace ─────── */
 function HeroDemo() {
   const ref = useRef(null)
 
   useGSAP(
     () => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const hl = ref.current.querySelector('.demo__hl')
       const cursor = ref.current.querySelector('.demo__cursor')
-      hl.classList.add('is-adjustable')
 
       gsap.set('.demo__hl', { opacity: 0, scale: 0.94, transformOrigin: '50% 50%' })
       gsap.set('.demo__pill', { opacity: 0, y: 8 })
-      gsap.set('.demo__answer', { opacity: 0, y: 16 })
+      gsap.set('.demo__answer', { opacity: 0, y: 14 })
+      gsap.set('.demo__mode', { opacity: 0, y: 8 })
       gsap.set(cursor, { opacity: 0 })
 
-      if (reduce) {
-        gsap.set(['.demo__hl', '.demo__pill', '.demo__answer'], {
+      if (reduced()) {
+        gsap.set(['.demo__hl', '.demo__pill', '.demo__answer', '.demo__mode', cursor], {
           opacity: 1,
           scale: 1,
           y: 0,
         })
-        gsap.set(cursor, { opacity: 1 })
         return
       }
 
-      // One-time, smooth entrance — no janky loops.
       gsap
         .timeline({ defaults: { ease: 'power3.out' } })
         .to('.demo__hl', { opacity: 1, scale: 1, duration: 0.55 })
         .to(cursor, { opacity: 1, duration: 0.35 }, '-=0.25')
         .to('.demo__pill', { opacity: 1, y: 0, duration: 0.4 }, '-=0.15')
-        .to('.demo__answer', { opacity: 1, y: 0, duration: 0.5 }, '+=0.45')
+        .to('.demo__answer', { opacity: 1, y: 0, duration: 0.5 }, '+=0.4')
+        .to('.demo__mode', { opacity: 1, y: 0, duration: 0.35, stagger: 0.07 }, '-=0.25')
 
-      // Continuous, perfectly smooth circular orbit around the box centre.
+      /* Continuous, perfectly smooth circular orbit around the box centre. */
       const orbit = { a: -Math.PI / 2 }
-      const R = 30
+      const R = 26
       gsap.to(orbit, {
         a: orbit.a + Math.PI * 2,
         duration: 5,
         ease: 'none',
         repeat: -1,
         onUpdate: () => {
-          gsap.set(cursor, {
-            x: Math.cos(orbit.a) * R,
-            y: Math.sin(orbit.a) * R,
-          })
+          gsap.set(cursor, { x: Math.cos(orbit.a) * R, y: Math.sin(orbit.a) * R })
         },
       })
     },
     { scope: ref },
   )
-
-  const bars = [38, 52, 44, 63, 78, 96]
 
   return (
     <div className="mock demo" ref={ref}>
@@ -90,765 +132,92 @@ function HeroDemo() {
         <i />
         <i />
         <i />
-        <span className="demo__url">analytics · q3 dashboard</span>
+        <span className="demo__url">workspace</span>
       </div>
       <div className="mock__body">
-        <div className="demo__line" style={{ width: '34%' }} />
-        <div className="demo__line demo__line--sm" style={{ width: '22%' }} />
-        <div className="demo__chart">
-          {bars.map((h, i) => (
-            <i key={i} style={{ height: `${h}%` }} />
-          ))}
+        <div className="demo__stack">
+          <div className="demo__win">
+            <span className="demo__win-tag">Moodle</span>
+            <span className="demo__win-title">Week 4 research materials</span>
+            <div className="demo__line" style={{ width: '78%' }} />
+            <div className="demo__line demo__line--sm" style={{ width: '52%' }} />
+          </div>
+
+          <div className="demo__win">
+            <span className="demo__win-tag">Files</span>
+            <span className="demo__win-title">3 documents ready</span>
+            <div className="demo__files">
+              {['PDF', 'DOCX', 'XLSX'].map((f) => (
+                <span key={f}>{f}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="demo__hl" />
+
+          <svg className="demo__cursor" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M3 2l7 18 2.5-7.5L20 10z"
+              fill="#0b0b10"
+              stroke="#fff"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
 
-        <div className="demo__hl" style={{ left: '6%', top: '40%', width: '64%', height: '46%' }} />
-
-        <div className="mock__pill demo__pill" style={{ right: '6%', top: '10%' }}>
+        <div className="mock__pill demo__pill">
           <span className="brand__dot" />
-          What does this chart mean?
+          “Turn this into a 7-slide presentation.”
         </div>
 
         <div className="demo__answer">
           <span className="brand__dot" />
           <p>
-            Revenue is up <b>24%</b> this quarter — the jump is mostly new signups
-            in week 6.
+            Drafting <b>7 slides</b> from the Week 4 material — approve to create
+            the file.
           </p>
         </div>
 
-        <svg className="demo__cursor" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M3 2l7 18 2.5-7.5L20 10z"
-            fill="#0b0b10"
-            stroke="#fff"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    </div>
-  )
-}
-
-/* Smooth cardinal-spline path through a set of points. */
-function smoothPath(pts) {
-  if (pts.length < 2) return ''
-  let d = `M ${pts[0].x} ${pts[0].y}`
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] || pts[i]
-    const p1 = pts[i]
-    const p2 = pts[i + 1]
-    const p3 = pts[i + 2] || p2
-    const t = 0.18
-    const c1x = p1.x + (p2.x - p0.x) * t
-    const c1y = p1.y + (p2.y - p0.y) * t
-    const c2x = p2.x - (p3.x - p1.x) * t
-    const c2y = p2.y - (p3.y - p1.y) * t
-    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`
-  }
-  return d
-}
-
-/* ── Animated projection curve (slide 08) ─────────────────── */
-function GrowthChart() {
-  const ref = useRef(null)
-  // Monthly projected MRR ($k) — deliberately non-linear: learn, then scale.
-  const data = [2, 3, 8, 11, 16, 24, 30, 36, 42, 49, 56, 63]
-  const milestones = [
-    [0, 'M1'],
-    [2, 'M3'],
-    [5, 'M6'],
-    [8, 'M9'],
-    [11, 'M12'],
-  ]
-  const W = 600
-  const H = 188
-  const padT = 16
-  const padB = 22
-  const maxY = 72
-  const pts = data.map((v, i) => ({
-    x: (i / (data.length - 1)) * W,
-    y: H - padB - (v / maxY) * (H - padT - padB),
-  }))
-  const linePath = smoothPath(pts)
-  const areaPath = `${linePath} L ${W} ${H} L 0 ${H} Z`
-
-  useGSAP(
-    () => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const line = ref.current.querySelector('.gc__line')
-      const area = ref.current.querySelector('.gc__area')
-      const dots = ref.current.querySelectorAll('.gc__dot')
-      const numEl = ref.current.querySelector('.gc__num')
-
-      if (reduce) {
-        numEl.textContent = '$63K'
-        return
-      }
-
-      const len = line.getTotalLength()
-      gsap.set(line, { strokeDasharray: len, strokeDashoffset: len })
-      gsap.set(area, { opacity: 0 })
-      gsap.set(dots, { scale: 0, transformOrigin: '50% 50%' })
-
-      gsap
-        .timeline({ defaults: { ease: 'power2.out' }, delay: 0.2 })
-        .to(line, { strokeDashoffset: 0, duration: 1.5 })
-        .to(area, { opacity: 1, duration: 0.8 }, '-=1.05')
-        .to(dots, { scale: 1, duration: 0.4, stagger: 0.1, ease: 'back.out(2)' }, '-=0.7')
-
-      const obj = { v: 0 }
-      gsap.to(obj, {
-        v: 63,
-        duration: 1.6,
-        ease: 'power2.out',
-        delay: 0.2,
-        onUpdate: () => {
-          numEl.textContent = '$' + Math.round(obj.v) + 'K'
-        },
-      })
-    },
-    { scope: ref },
-  )
-
-  return (
-    <div className="gc" ref={ref}>
-      <div className="gc__head">
-        <div>
-          <span className="gc__num">$0K</span>
-          <span className="gc__cap">Month 12 · $55–70k range</span>
-        </div>
-        <span className="tag">Illustrative</span>
-      </div>
-      <div className="gc__plot">
-        <svg
-          className="gc__svg"
-          viewBox={`0 0 ${W} ${H}`}
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <defs>
-            <linearGradient id="gcLine" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#6d4bff" />
-              <stop offset="55%" stopColor="#2f6bff" />
-              <stop offset="100%" stopColor="#e1409a" />
-            </linearGradient>
-            <linearGradient id="gcArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(109,75,255,0.26)" />
-              <stop offset="100%" stopColor="rgba(109,75,255,0)" />
-            </linearGradient>
-          </defs>
-          <path className="gc__area" d={areaPath} fill="url(#gcArea)" />
-          <path
-            className="gc__line"
-            d={linePath}
-            fill="none"
-            stroke="url(#gcLine)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
-        {milestones.map(([mi], k) => (
-          <span
-            key={k}
-            className="gc__dot"
-            style={{
-              left: `${(pts[mi].x / W) * 100}%`,
-              top: `${(pts[mi].y / H) * 100}%`,
-            }}
-          />
-        ))}
-      </div>
-      <div className="gc__axis">
-        {milestones.map(([mi, label], k) => {
-          const pct = (pts[mi].x / W) * 100
-          const transform =
-            k === 0
-              ? 'none'
-              : k === milestones.length - 1
-                ? 'translateX(-100%)'
-                : 'translateX(-50%)'
-          return (
-            <span key={label} style={{ left: `${pct}%`, transform }}>
-              {label}
+        <div className="demo__modes">
+          {['Hey AYO', 'Hover', 'Silent', 'Act'].map((m) => (
+            <span className="demo__mode" key={m}>
+              {m}
             </span>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-/* ── Animated donut chart (slide 10) ──────────────────────── */
-function PieChart({ segments }) {
-  const ref = useRef(null)
-  const R = 64
-  const C = 2 * Math.PI * R
-  let acc = 0
-  const arcs = segments.map((s) => {
-    const start = acc
-    acc += s.pct
-    return { ...s, len: (s.pct / 100) * C, offset: -(start / 100) * C }
-  })
-
-  useGSAP(
-    () => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const circles = ref.current.querySelectorAll('.pie__seg')
-      if (reduce) return
-      circles.forEach((c, i) => {
-        const len = parseFloat(c.dataset.len)
-        gsap.fromTo(
-          c,
-          { strokeDasharray: `0 ${C}` },
-          {
-            strokeDasharray: `${len} ${C - len}`,
-            duration: 0.7,
-            ease: 'power2.out',
-            delay: 0.25 + i * 0.16,
-          },
-        )
-      })
-    },
-    { scope: ref },
-  )
-
-  return (
-    <div className="pie" ref={ref}>
-      <svg viewBox="0 0 160 160" aria-hidden="true">
-        <g transform="rotate(-90 80 80)">
-          {arcs.map((a, i) => (
-            <circle
-              key={i}
-              className="pie__seg"
-              data-len={a.len}
-              cx="80"
-              cy="80"
-              r={R}
-              fill="none"
-              stroke={a.color}
-              strokeWidth="22"
-              strokeDasharray={`${a.len} ${C - a.len}`}
-              strokeDashoffset={a.offset}
-            />
-          ))}
-        </g>
-      </svg>
-      <div className="pie__center">
-        <span className="pie__total">$100K</span>
-        <span className="pie__sub">12-mo runway</span>
-      </div>
-    </div>
-  )
-}
-
-/* ── Rotating quote (slide 11) ────────────────────────────── */
-function RotatingQuote({ items }) {
-  const ref = useRef(null)
-
-  useGSAP(
-    () => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const lines = gsap.utils.toArray(ref.current.children)
-
-      // First line is visible from the very first paint (CSS handles the rest),
-      // so there is never a stacked/overlapping flash. We animate only opacity
-      // and transform here — blur is intentionally avoided because animating it
-      // on large text is the main cause of stutter.
-      gsap.set(lines, { opacity: 0, y: 16 })
-      gsap.set(lines[0], { opacity: 1, y: 0 })
-
-      if (reduce || lines.length < 2) return
-
-      const tl = gsap.timeline({ repeat: -1 })
-      lines.forEach((line, i) => {
-        const next = lines[(i + 1) % lines.length]
-        tl.to({}, { duration: 2.6 })
-          .to(line, { opacity: 0, y: -16, duration: 0.45, ease: 'power2.in' })
-          .fromTo(
-            next,
-            { opacity: 0, y: 16 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              ease: 'power3.out',
-              immediateRender: false,
-            },
-            '>-0.1',
-          )
-      })
-
-      // fromTo defaults to immediateRender — the last step targets lines[0]
-      // and would hide the first quote until its turn in the loop.
-      gsap.set(lines[0], { opacity: 1, y: 0 })
-    },
-    { scope: ref },
-  )
-
-  return (
-    <div className="rotq" ref={ref}>
-      {items.map((node, i) => (
-        <blockquote className="quote" key={i}>
-          {node}
-        </blockquote>
-      ))}
-    </div>
-  )
-}
-
-function Head({ no, title }) {
-  return (
-    <div className="slide-head r">
-      <span className="section-no">{no}</span>
-      <span className="title">{title}</span>
-    </div>
-  )
-}
-
-/* ── 01 · Opening ───────────────────────────────────────── */
-function Opening() {
-  return (
-    <Slide>
-      <div className="cols-2">
-        <div className="stack gap-md">
-          <span className="kicker r">Privacy-first AI copilot for Windows</span>
-          <h1 className="display r">
-            The desktop,
-            <br />
-            finally <span className="grad">AI-native</span>.
-          </h1>
-          <p className="lead r">
-            AI today still asks you to explain your computer. AYO changes that —
-            point at anything on your screen and ask. No screenshots. No
-            copy-paste. No long explanations.
-          </p>
-          <p className="lead lead--accent r">
-            We believe this is the start of an{' '}
-            <span className="grad">AI-native desktop</span>.
-          </p>
-          <div className="row r">
-            <span className="tag">Pre-Seed · 2026</span>
-            <span className="eyebrow">heyayo.com</span>
-          </div>
-        </div>
-
-        <div className="r">
-          <HeroDemo />
-        </div>
-      </div>
-    </Slide>
-  )
-}
-
-/* ── 02 · Why AYO Is Different ──────────────────────────── */
-const DIFFERENTIATORS = [
-  ['Local wake word', 'Say “AYO” from anywhere'],
-  ['Screen understanding', 'Understands what’s on the desktop'],
-  ['Cursor awareness', 'Knows what the user is pointing at'],
-  ['Silent mode', 'Works without voice'],
-  ['Memory', 'Remembers useful context'],
-  ['Proactive help', 'Can assist before the user asks'],
-  ['Desktop actions', 'Can help users act, not just chat'],
-]
-function WhyDifferent() {
-  return (
-    <Slide>
-      <Head no="02 / 16" title="Why AYO Is Different" />
-      <div className="cols-2">
-        <div className="stack gap-md">
-          <h2 className="headline r">
-            AYO is not a chatbot with a{' '}
-            <span className="grad">desktop icon</span>.
-          </h2>
-          <p className="lead r">
-            It is an ambient AI layer for the computer — combining the
-            capabilities most tools ship one at a time:
-          </p>
-          <div className="callout r">
-            AYO doesn’t wait for users to explain their computer.{' '}
-            <b>It understands the workspace around them.</b>
-          </div>
-        </div>
-        <div
-          className="card-grid r"
-          style={{ gridTemplateColumns: 'repeat(2, 1fr)', alignSelf: 'start' }}
-        >
-          {DIFFERENTIATORS.map(([title, desc], i) => (
-            <div
-              className="card"
-              key={title}
-              style={
-                i === DIFFERENTIATORS.length - 1
-                  ? { gridColumn: '1 / -1' }
-                  : undefined
-              }
-            >
-              <span className="card__no">{String(i + 1).padStart(2, '0')}</span>
-              <span className="card__title">{title}</span>
-              <span className="card__desc">{desc}</span>
-            </div>
           ))}
         </div>
       </div>
-      <p className="note r" style={{ marginTop: '16px' }}>
-        One of the first desktop AI copilots with a local wake word, screen
-        context, cursor awareness, memory, and proactive assistance in one
-        product.
-      </p>
-    </Slide>
-  )
-}
-
-/* ── 03 · The Landscape ─────────────────────────────────── */
-/* 0 = none · 1 = partial · AYO column is always full */
-const COMPETITORS = ['ChatGPT', 'Copilot', 'Gemini', 'Grammarly']
-const MATRIX = [
-  ['Custom wake word — fully local', [0, 0, 0, 0]],
-  ['Ambient screen watching', [0, 1, 0, 0]],
-  ['Hover-to-ask on any app', [0, 0, 0, 1]],
-  ['Deictic “this” resolution', [0, 0, 0, 0]],
-  ['Long-term personal memory', [1, 0, 1, 0]],
-  ['Proactive — speaks first', [0, 0, 0, 0]],
-]
-
-function Mark({ state }) {
-  if (state === 1) {
-    return (
-      <svg className="cmp__icon" viewBox="0 0 20 20" role="img" aria-label="Partial">
-        <circle cx="10" cy="10" r="8.5" fill="none" stroke="#e8923a" strokeWidth="1.6" />
-        <path d="M10 1.5 A8.5 8.5 0 0 1 10 18.5 Z" fill="#e8923a" />
-      </svg>
-    )
-  }
-  if (state === 2) {
-    return (
-      <svg className="cmp__icon" viewBox="0 0 20 20" role="img" aria-label="Yes">
-        <circle cx="10" cy="10" r="9" fill="#1f9d57" />
-        <path
-          d="M6 10.5l2.5 2.5L14.5 7"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    )
-  }
-  return <span className="cmp__dash" aria-label="No">—</span>
-}
-
-function Landscape() {
-  return (
-    <Slide>
-      <Head no="03 / 16" title="The Landscape" />
-      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '4px' }}>
-        Rivals do pieces of this.{' '}
-        <span className="grad">AYO ships it as one layer.</span>
-      </h2>
-      <div
-        className="cmp r"
-        role="table"
-        aria-label="AYO versus desktop AI tools"
-      >
-        <div className="cmp__cell cmp__cell--head" role="columnheader">
-          Capability
-        </div>
-        {COMPETITORS.map((c) => (
-          <div className="cmp__cell cmp__cell--head cmp__cell--mark" key={c} role="columnheader">
-            {c}
-          </div>
-        ))}
-        <div className="cmp__cell cmp__cell--head cmp__cell--mark cmp__cell--ayohead" role="columnheader">
-          <span className="brand__dot" />
-          AYO
-        </div>
-
-        {MATRIX.map(([cap, states]) => (
-          <div className="cmp__row" role="row" key={cap}>
-            <div className="cmp__cell cmp__cell--cap" role="cell">
-              {cap}
-            </div>
-            {states.map((s, i) => (
-              <div className="cmp__cell cmp__cell--mark" role="cell" key={i}>
-                <Mark state={s} />
-              </div>
-            ))}
-            <div className="cmp__cell cmp__cell--mark cmp__cell--ayo" role="cell">
-              <Mark state={2} />
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="note r" style={{ marginTop: '14px' }}>
-        Partial = exists but limited or app-specific. Trimmed to the clearest
-        gaps — full 12-dimension comparison and technical breakdown live in the
-        appendix.
-      </p>
-    </Slide>
-  )
-}
-
-/* ── 04 · The Problem ───────────────────────────────────── */
-function Problem() {
-  return (
-    <Slide>
-      <Head no="04 / 16" title="The Problem" />
-      <div className="cols-2">
-        <h2 className="headline r">
-          AI is powerful — but it still lives <span className="grad">outside</span>{' '}
-          the real workflow.
-        </h2>
-        <div className="stack gap-md">
-          <p className="lead r">
-            Most tools wait for the user to bring context into a chatbox. But the
-            context is already on the screen.
-          </p>
-          <p className="body r">
-            Users should not have to explain what they are looking at. The
-            computer should understand the workspace.
-          </p>
-        </div>
-      </div>
-    </Slide>
-  )
-}
-
-/* ── 03 · The Product ───────────────────────────────────── */
-const SURFACES = [
-  'Websites',
-  'PDFs',
-  'Dashboards',
-  'Code',
-  'Images',
-  'Emails',
-  'Posts',
-  'Documents',
-  'Apps',
-]
-function Product() {
-  return (
-    <Slide>
-      <Head no="05 / 16" title="The Product" />
-      <div className="cols-2">
-        <div className="stack gap-md">
-          <h2 className="statement r">
-            AYO lives on top of the desktop.
-          </h2>
-          <p className="lead r">
-            Use it by voice or silently. Point at anything and ask — AYO helps you
-            understand, summarize, translate, check, remember, and act, directly
-            from your desktop.
-          </p>
-          <div className="chips r">
-            {['Understand', 'Summarize', 'Translate', 'Check', 'Remember', 'Act'].map(
-              (v) => (
-                <span className="chip" key={v}>
-                  {v}
-                </span>
-              ),
-            )}
-          </div>
-        </div>
-        <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {SURFACES.map((s, i) => (
-            <div className="card" key={s}>
-              <span className="card__no">{String(i + 1).padStart(2, '0')}</span>
-              <span className="card__title">{s}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Slide>
-  )
-}
-
-/* ── Layered "AI layer on the desktop" visual (slide 04) ─── */
-function WhyNowVisual() {
-  const ref = useRef(null)
-
-  useGSAP(
-    () => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const slabs = gsap.utils.toArray(ref.current.querySelectorAll('.wn__slab'))
-      gsap.set(slabs, { opacity: 0, y: 30, scale: 0.96 })
-
-      if (reduce) {
-        gsap.set(slabs, { opacity: 1, y: 0, scale: 1 })
-        return
-      }
-
-      // staggered build-up of the stack
-      gsap
-        .timeline({ delay: 0.2 })
-        .to(slabs, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.75,
-          ease: 'power3.out',
-          stagger: 0.14,
-        })
-        .from(
-          '.wn__connectors',
-          { opacity: 0, duration: 0.6, ease: 'power2.out' },
-          '-=0.3',
-        )
-
-      // gentle parallax float — each layer at its own phase
-      gsap.to('.wn__slab--top', { y: '-=12', duration: 3.2, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 1 })
-      gsap.to('.wn__slab--mid', { y: '-=8', duration: 3.6, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 1.3 })
-      gsap.to('.wn__slab--base', { y: '-=5', duration: 4, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 1.6 })
-
-      // pulsing glow
-      gsap.to('.wn__glow', { opacity: 0.9, scale: 1.12, duration: 2.6, ease: 'sine.inOut', repeat: -1, yoyo: true })
-
-      // scan light sweeping across the AYO layer
-      gsap.fromTo(
-        '.wn__scan',
-        { xPercent: -120, opacity: 0 },
-        { xPercent: 220, opacity: 1, duration: 2.4, ease: 'power1.inOut', repeat: -1, repeatDelay: 1.6 },
-      )
-
-      // energy flowing down the connectors
-      gsap.to('.wn__flow', {
-        strokeDashoffset: -24,
-        duration: 1.1,
-        ease: 'none',
-        repeat: -1,
-      })
-
-      // floating particles
-      gsap.to('.wn__spark', {
-        y: '-=14',
-        opacity: 0.9,
-        duration: 2.2,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
-        stagger: { each: 0.4, from: 'random' },
-      })
-    },
-    { scope: ref },
-  )
-
-  return (
-    <div className="wn" ref={ref}>
-      <div className="wn__glow" />
-
-      {/* glowing connectors that link the layers */}
-      <svg className="wn__connectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="wnFlow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6d4bff" />
-            <stop offset="100%" stopColor="#e1409a" />
-          </linearGradient>
-        </defs>
-        <path className="wn__connector" d="M64 20 L49 53" stroke="rgba(109,75,255,0.25)" strokeWidth="0.7" fill="none" />
-        <path className="wn__connector" d="M49 53 L35 82" stroke="rgba(109,75,255,0.25)" strokeWidth="0.7" fill="none" />
-        <path className="wn__flow" d="M64 20 L49 53 L35 82" stroke="url(#wnFlow)" strokeWidth="0.9" fill="none" strokeDasharray="3 9" strokeLinecap="round" />
-      </svg>
-
-      <span className="wn__spark" style={{ top: '12%', left: '22%' }} />
-      <span className="wn__spark" style={{ top: '48%', left: '82%' }} />
-      <span className="wn__spark" style={{ top: '70%', left: '60%' }} />
-
-      {/* base — Windows desktop */}
-      <div className="wn__slab wn__slab--base">
-        <span className="wn__tag">Windows desktop</span>
-        <div className="wn__win">
-          <span /><span /><span />
-        </div>
-        <div className="wn__taskbar" />
-      </div>
-
-      {/* mid — apps & content */}
-      <div className="wn__slab wn__slab--mid">
-        <span className="wn__tag">Your apps &amp; content</span>
-        <div className="wn__blocks">
-          <i /><i /><i />
-        </div>
-      </div>
-
-      {/* top — AYO AI layer */}
-      <div className="wn__slab wn__slab--top">
-        <span className="wn__sheen" />
-        <span className="wn__scan" />
-        <span className="wn__tag wn__tag--ayo">
-          <span className="brand__dot" />
-          AYO · AI layer
-        </span>
-        <div className="wn__hl">
-          <span className="wn__pill">Point. Ask. Act.</span>
-        </div>
-      </div>
     </div>
   )
 }
 
-/* ── 04 · Why Now ───────────────────────────────────────── */
-function WhyNow() {
-  return (
-    <Slide>
-      <Head no="06 / 16" title="Why Now" />
-      <div className="cols-2">
-        <div className="stack gap-md">
-          <h2 className="headline r">
-            The next step is not another AI tab. It is an AI{' '}
-            <span className="grad">layer</span> that works where users already are.
-          </h2>
-          <p className="lead r">
-            AI is moving from chatboxes into real workflows. The layer that wins is
-            the one that meets people on their desktop.
-          </p>
-          <p className="body r">
-            Windows is still one of the biggest productivity environments in the
-            world — yet it lacks a truly native AI companion for everyday
-            workflows. <b style={{ color: 'var(--ink)' }}>AYO is built for that gap.</b>
-          </p>
-        </div>
-        <div className="r">
-          <WhyNowVisual />
-        </div>
-      </div>
-    </Slide>
-  )
-}
-
-/* ── The friction journey (slide 05) ──────────────────────── */
-const JOURNEY = [
-  ['01', 'Saw it on mobile'],
-  ['02', 'Couldn’t use it yet'],
-  ['03', 'Joined the waitlist'],
-  ['04', 'Returned on PC'],
-  ['05', 'Downloaded AYO'],
-  ['06', 'Some paid'],
-]
-function JourneyFlow() {
+/* ── Reusable numbered rail (how it works · go-to-market) ── */
+function FlowRail({ steps }) {
   const ref = useRef(null)
 
   useGSAP(
     () => {
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       const nodes = gsap.utils.toArray(ref.current.querySelectorAll('.flow__node'))
-      const labels = gsap.utils.toArray(ref.current.querySelectorAll('.flow__label'))
+      const labels = gsap.utils.toArray(ref.current.querySelectorAll('.flow__text'))
       gsap.set(nodes, { scale: 0 })
-      gsap.set(labels, { opacity: 0, y: 14 })
+      gsap.set(labels, { opacity: 0, y: 12 })
 
-      if (reduce) {
+      if (reduced()) {
         gsap.set(nodes, { scale: 1 })
         gsap.set(labels, { opacity: 1, y: 0 })
         return
       }
 
       gsap
-        .timeline({ delay: 0.3 })
-        .from('.flow__rail-fill', { scaleX: 0, transformOrigin: 'left', duration: 1.0, ease: 'power2.out' })
-        .to(nodes, { scale: 1, duration: 0.4, ease: 'back.out(2)', stagger: 0.12 }, '-=0.75')
-        .to(labels, { opacity: 1, y: 0, duration: 0.4, stagger: 0.12 }, '<')
+        .timeline({ delay: 0.25 })
+        .from('.flow__rail-fill', {
+          scaleX: 0,
+          transformOrigin: 'left',
+          duration: 0.9,
+          ease: 'power2.out',
+        })
+        .to(nodes, { scale: 1, duration: 0.38, ease: 'back.out(2)', stagger: 0.1 }, '-=0.65')
+        .to(labels, { opacity: 1, y: 0, duration: 0.38, stagger: 0.1 }, '<')
 
       gsap.to('.flow__rail-flow', {
         backgroundPositionX: '-=20',
@@ -856,11 +225,6 @@ function JourneyFlow() {
         ease: 'none',
         repeat: -1,
       })
-      gsap.fromTo(
-        '.flow__ring',
-        { scale: 0.85, opacity: 0.5 },
-        { scale: 1.7, opacity: 0, duration: 1.7, ease: 'power1.out', repeat: -1, delay: 1.6 },
-      )
     },
     { scope: ref },
   )
@@ -871,176 +235,200 @@ function JourneyFlow() {
         <div className="flow__rail-fill" />
         <div className="flow__rail-flow" />
       </div>
-      <div className="flow__steps">
-        {JOURNEY.map(([no, label], i) => {
-          const paid = i === JOURNEY.length - 1
-          return (
-            <div className="flow__step" key={no}>
-              <span className={`flow__node${paid ? ' flow__node--paid' : ''}`}>
-                {no}
-                {paid && <span className="flow__ring" />}
-              </span>
-              <span className={`flow__label${paid ? ' flow__label--paid' : ''}`}>
-                {label}
-              </span>
-            </div>
-          )
-        })}
+      <div className="flow__steps" style={{ '--n': steps.length }}>
+        {steps.map(([no, label, sub], i) => (
+          <div className="flow__step" key={no}>
+            <span
+              className={`flow__node${i === steps.length - 1 ? ' flow__node--paid' : ''}`}
+            >
+              {no}
+            </span>
+            <span className="flow__text">
+              <b className="flow__label">{label}</b>
+              {sub && <em className="flow__sub">{sub}</em>}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
-/* ── 05 · Early Signal ──────────────────────────────────── */
-function EarlySignal() {
+/* ── 01 · Opening ───────────────────────────────────────── */
+function Opening() {
   return (
     <Slide>
-      <Head no="07 / 16" title="Early Signal" />
-      <div className="cols-2" style={{ alignItems: 'start' }}>
-        <h2 className="headline r" style={{ fontSize: 'clamp(26px, 3.4vw, 50px)' }}>
-          People saw a desktop AI product on mobile, couldn’t use it —{' '}
-          <span className="grad">and still came back</span> to download it.
-        </h2>
-        <div className="signal-facts r">
-          <div>
-            <b className="grad">100+</b>
-            <span>Joined the waitlist</span>
-          </div>
-          <div>
-            <b>First</b>
-            <span>Paying customers</span>
-          </div>
-          <div>
-            <b>~0</b>
-            <span>Followers at launch · brand-new page</span>
-          </div>
-        </div>
-      </div>
-
-      <JourneyFlow />
-
-      <p className="note r" style={{ marginTop: '4px' }}>
-        Most users discovered AYO on mobile — even though it’s a Windows desktop
-        product. The signal wasn’t scale; it was <b style={{ color: 'var(--ink)', fontStyle: 'normal' }}>intent</b>.
-        People understood the idea, remembered it, and acted despite the friction.
-      </p>
-    </Slide>
-  )
-}
-
-/* ── 06 · What We Learned ───────────────────────────────── */
-function Learned() {
-  return (
-    <Slide>
-      <Head no="08 / 16" title="What We Learned" />
       <div className="cols-2">
-        <h2 className="headline r">
-          AYO is a <span className="grad">visual</span> product.
-        </h2>
-        <div className="lines r" style={{ alignSelf: 'center', width: '100%' }}>
-          <div className="line-item">
-            <span className="line-item__no">A</span>
-            <div>
-              <div className="line-item__text">Paid ads create reach</div>
-            </div>
-          </div>
-          <div className="line-item">
-            <span className="line-item__no">B</span>
-            <div>
-              <div className="line-item__text">Creators create trust</div>
-            </div>
-          </div>
-          <div className="line-item">
-            <span className="line-item__no">C</span>
-            <div>
-              <div className="line-item__text">Organic compounds awareness</div>
-            </div>
+        <div className="stack gap-md">
+          <span className="kicker r">Pre-Seed · August 2026</span>
+          <h1 className="display r">
+            Changing how
+            <br />
+            people use
+            <br />
+            <span className="grad">their PCs</span>.
+          </h1>
+          <p className="lead lead--accent r">
+            Call it. Point at it. Type silently. Let it act.
+          </p>
+          <p className="lead r">
+            AYO makes AI available inside the user’s existing workflow — through
+            voice, cursor, context and user-approved action.
+          </p>
+          <div className="row r">
+            <span className="tag">Prepared for Sadu Capital</span>
+            <span className="eyebrow">AYO Systems · heyayo.com</span>
           </div>
         </div>
+
+        <div className="r">
+          <HeroDemo />
+          <p className="note note--flush" style={{ marginTop: '14px' }}>
+            Illustrative product experience.
+          </p>
+        </div>
       </div>
-      <p className="body r" style={{ marginTop: '26px' }}>
-        People understand AYO fastest when they see it working on a real desktop —
-        which makes creator-led distribution especially powerful. The opportunity
-        is turning AYO from something people notice into something they repeatedly
-        use.
-      </p>
     </Slide>
   )
 }
 
-/* ── 07 · Growth Strategy ───────────────────────────────── */
-const CHANNELS = [
-  ['01', 'Instagram paid ads', 'Short-form product demos to create awareness and retarget interested users.'],
-  ['02', 'YouTube desktop ads', 'Higher-intent traffic — users are already on desktop and can install immediately.'],
-  ['03', 'Creator & influencer demos', 'Creators show AYO in real workflows, making it easier to understand and trust.'],
-  ['04', 'Organic blast radius', 'If AYO looks impressive enough, users, tech pages, and creators share it unpaid.'],
+/* ── 02 · Problem ───────────────────────────────────────── */
+const LOOP = [
+  'Notice a problem',
+  'Open an AI tool',
+  'Rebuild the context',
+  'Copy the answer',
+  'Switch back and apply',
 ]
-function Growth() {
+const WITH_AYO = [
+  ['Point or call', 'Wake word, hover or silent prompt'],
+  ['AYO understands', 'Screen, file and workspace context'],
+  ['AYO helps or acts', 'Answer, create or execute with approval'],
+]
+function Problem() {
   return (
     <Slide>
-      <Head no="09 / 16" title="Growth Strategy" />
-      <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-        {CHANNELS.map(([no, title, desc]) => (
-          <div className="card" key={no}>
-            <span className="card__no">{no}</span>
+      <Head id="problem" title="The Problem" />
+      <h2 className="headline r" style={{ maxWidth: '24ch', marginBottom: '6px' }}>
+        AI is powerful. The interface is still{' '}
+        <span className="grad">work</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(18px, 3vh, 32px)', maxWidth: '68ch' }}>
+        Users leave their task to access intelligence, rebuild context, then
+        manually move the answer back.
+      </p>
+
+      <div className="cols-2" style={{ alignItems: 'stretch' }}>
+        <div className="r">
+          <Panel tag="Today" title="The copy–switch–prompt loop">
+            <ol className="mini mini--num">
+              {LOOP.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ol>
+            <p className="panel__foot">
+              Every switch costs attention — and every manual handoff limits what
+              AI can do.
+            </p>
+          </Panel>
+        </div>
+        <div className="r">
+          <Panel accent tag="With AYO" title="Intelligence arrives inside the task">
+            <ol className="mini mini--num">
+              {WITH_AYO.map(([t, d]) => (
+                <li key={t}>
+                  <b>{t}</b>
+                  <em>{d}</em>
+                </li>
+              ))}
+            </ol>
+            <p className="panel__foot">
+              The next interface is not another window. It is an always-available
+              layer.
+            </p>
+          </Panel>
+        </div>
+      </div>
+    </Slide>
+  )
+}
+
+/* ── 03 · Product ───────────────────────────────────────── */
+const REACHES = [
+  ['“Hey AYO”', 'Wake word', 'Hands-free help without leaving the keyboard, document or game.'],
+  ['Cursor context', 'Hover to ask', 'Point at what matters; ask without manually copying or explaining it.'],
+  ['Type, don’t speak', 'Silent mode', 'A discreet command layer for classrooms, offices and public spaces.'],
+  ['Help → action', 'Proactive + agentic', 'AYO can suggest the next step and execute only after user approval.'],
+]
+function Product() {
+  return (
+    <Slide>
+      <Head id="product" title="The Product" />
+      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '6px' }}>
+        One assistant. <span className="grad">Four natural ways</span> to reach it.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(16px, 3vh, 30px)', maxWidth: '64ch' }}>
+        AYO adapts to the moment instead of forcing every task into a chat box.
+      </p>
+
+      <div className="radial r">
+        {REACHES.slice(0, 2).map(([tag, title, desc]) => (
+          <div className="radial__card" key={title}>
+            <span className="radial__tag">{tag}</span>
+            <span className="card__title">{title}</span>
+            <span className="card__desc">{desc}</span>
+          </div>
+        ))}
+        <div className="radial__core">
+          <span className="brand__dot" />
+          <b>AYO</b>
+          <em>context-aware AI companion</em>
+        </div>
+        {REACHES.slice(2).map(([tag, title, desc]) => (
+          <div className="radial__card" key={title}>
+            <span className="radial__tag">{tag}</span>
             <span className="card__title">{title}</span>
             <span className="card__desc">{desc}</span>
           </div>
         ))}
       </div>
-      <div className="loop r">
-        <span className="loop__step grad">Paid reach starts the fire</span>
-        <span className="loop__arrow">→</span>
-        <span className="loop__step">Creators build trust</span>
-        <span className="loop__arrow">→</span>
-        <span className="loop__step">Organic keeps it spreading</span>
-      </div>
     </Slide>
   )
 }
 
-/* ── 08 · Growth Model ──────────────────────────────────── */
-const PHASES = [
-  ['Month 1', '$1–3k', 'Early conversion test'],
-  ['Month 3', '$6–10k', 'Better funnel + first creator tests'],
-  ['Month 6', '$18–30k', 'Winning channels start scaling'],
-  ['Month 9', '$35–50k', 'Organic + creator loop compounds'],
-  ['Month 12', '$55–70k', 'Breakout case if distribution works'],
+/* ── 04 · How it works ──────────────────────────────────── */
+const PIPELINE = [
+  ['1', 'Reach', 'Voice · hover · silent prompt'],
+  ['2', 'See', 'Screen · files · email · app context'],
+  ['3', 'Reason', 'Route to the right model or tool'],
+  ['4', 'Act', 'Draft · create · click · type · organize'],
+  ['5', 'Remember', 'Workspace · notes · reminders · preferences'],
 ]
-function Model() {
+const GUARANTEES = [
+  ['User approval', 'before consequential actions'],
+  ['Privacy controls', 'for screen and data access'],
+  ['Local-first memory', 'where practical'],
+  ['Model flexibility', 'avoids single-provider lock-in'],
+]
+function HowItWorks() {
   return (
     <Slide>
-      <Head no="10 / 16" title="12-Month Growth Model" />
-      <div className="cols-2">
-        <div className="stack gap-sm">
-          <h2 className="statement r">
-            We don’t believe AYO grows{' '}
-            <span className="grad">linearly</span>. We learn, optimize, then scale.
-          </h2>
-          <p className="body r">
-            The first months are about learning — testing creators, fixing trust
-            friction, improving onboarding, and finding the message that converts.
-            If those learnings work, the curve turns non-linear.
-          </p>
-          <div className="callout r">
-            We believe AYO can break out{' '}
-            <b>earlier than a normal SaaS product</b> — it’s visual, demoable,
-            creator-friendly, and built in a market moving extremely fast.
-          </div>
-        </div>
-        <div className="r">
-          <GrowthChart />
-        </div>
-      </div>
+      <Head id="how" title="How It Works" />
+      <h2 className="headline r" style={{ maxWidth: '24ch', marginBottom: '6px' }}>
+        From screen context to <span className="grad">trusted action</span>.
+      </h2>
+      <p className="lead r" style={{ maxWidth: '68ch' }}>
+        A model-flexible orchestration layer turns user intent into contextual
+        help — while the user stays in control.
+      </p>
 
-      <div className="mile r">
-        {PHASES.map(([month, mrr, logic], i) => (
-          <div className="mile__card" key={month}>
-            <span className="mile__month">{month}</span>
-            <span className={`mile__mrr${i === PHASES.length - 1 ? ' grad' : ''}`}>
-              {mrr}
-            </span>
-            <span className="mile__logic">{logic}</span>
+      <FlowRail steps={PIPELINE} />
+
+      <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        {GUARANTEES.map(([title, desc]) => (
+          <div className="card" key={title}>
+            <span className="card__title">{title}</span>
+            <span className="card__desc">{desc}</span>
           </div>
         ))}
       </div>
@@ -1048,205 +436,656 @@ function Model() {
   )
 }
 
-/* ── 09 · The Raise ─────────────────────────────────────── */
-const LADDER = [
-  ['$2–5k', 'Early payment validation', false],
-  ['$10k', 'Strong early signal', false],
-  ['$20k', 'Real traction — not yet breakout', false],
-  ['$50k', 'Strong pre-seed / seed-level momentum', false],
-  ['$70k+', 'Breakout early revenue path', true],
-  ['$100k+', 'Serious seed / Series A conversation territory', true],
+/* ── 05 · Experience ────────────────────────────────────── */
+const EXPERIENCE = [
+  ['Learn', 'Understand what is on screen', 'Explain a Moodle page, summarize a PDF, build a study plan or turn course material into slides.'],
+  ['Create', 'Move from script to media', 'Draft, storyboard and route a video request to target creative-generation tools.'],
+  ['Build', 'Turn an idea into software', 'Translate intent into a site or app workflow through target development integrations.'],
+  ['Work', 'Act across daily applications', 'Understand email and documents, draft responses, extract decisions and complete approved steps.'],
+  ['Organize', 'Keep context across the day', 'Files, notes, reminders, workspace memory and personal preferences stay connected.'],
+  ['Play', 'A quiet companion for gaming', 'Wake word or hotkey help, minimal HUD, short contextual answers and no forced app switching.'],
 ]
-function Raise() {
+function Experience() {
   return (
     <Slide>
-      <Head no="11 / 16" title="The Raise" />
-      <div className="cols-2">
-        <div className="stack gap-md">
-          <span className="kicker r">AYO’s pre-seed launch · round open</span>
-          <div className="raise-fig r">
-            <span className="raise-fig__num grad">$100K</span>
-            <span className="raise-fig__cap">Pre-seed target · 12-month runway</span>
-          </div>
-          <div className="raise-meta r">
-            <div>
-              <b>$0</b>
-              <span>Raised so far · round open</span>
-            </div>
-            <div>
-              <b>YC SAFE</b>
-              <span>Structure</span>
-            </div>
-          </div>
-          <p className="body r" style={{ maxWidth: '48ch' }}>
-            We know startup returns usually take years — and we’re not building a
-            slow, linear SaaS business. AYO is a visual AI product with creator-led
-            distribution potential.{' '}
-            <b style={{ color: 'var(--ink)' }}>
-              Our conservative model shows survival; our growth model shows the
-              company we’re actually trying to build.
-            </b>
-          </p>
-        </div>
+      <Head id="experience" title="Experience" />
+      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '6px' }}>
+        AYO turns everyday PC moments into <span className="grad">outcomes</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(16px, 3vh, 28px)', maxWidth: '70ch' }}>
+        The product begins with high-frequency consumer and prosumer workflows,
+        then deepens across the whole day.
+      </p>
 
-        <div className="stack gap-sm">
-          <span className="eyebrow r">What the numbers mean</span>
-          <div className="ladder r">
-            {LADDER.map(([mrr, mean, hot]) => (
-              <div className={`ladder__row${hot ? ' is-hot' : ''}`} key={mrr}>
-                <span className={`ladder__mrr${hot ? ' grad' : ''}`}>{mrr}</span>
-                <span className="ladder__mean">{mean}</span>
-              </div>
-            ))}
+      <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        {EXPERIENCE.map(([tag, title, desc]) => (
+          <div className="card" key={tag}>
+            <span className="card__no">{tag.toUpperCase()}</span>
+            <span className="card__title">{title}</span>
+            <span className="card__desc">{desc}</span>
           </div>
-        </div>
+        ))}
       </div>
+
+      <p className="note r" style={{ marginTop: '16px' }}>
+        Roadmap examples reference target integrations and ecosystem partners
+        under evaluation — not signed commercial partnerships.
+      </p>
     </Slide>
   )
 }
 
-/* ── 10 · Use of Funds ──────────────────────────────────── */
-const FUNDS = [
-  ['Marketing & distribution', 'Paid ads, YouTube campaigns, creator partnerships, organic content, retargeting, launches.', 65, 'var(--violet)'],
-  ['Product development', 'We are CS students who build AYO ourselves, so engineering spend stays lean.', 20, 'var(--blue)'],
-  ['Infrastructure', 'APIs, cloud, storage, monitoring, analytics, and support systems.', 6, 'var(--cyan)'],
-  ['Legal & compliance', 'Company setup, SAFE docs, privacy, code signing, investor legal.', 5, 'var(--magenta)'],
-  ['Operations & buffer', 'Tools, subscriptions, test devices, short-term runway protection.', 4, '#ff8a3d'],
+/* ── 06 · Why now ───────────────────────────────────────── */
+const NOW_STATS = [
+  ['1.4B+', 'Monthly active Windows 10/11 devices'],
+  ['55%', 'Of the 2026 PC market forecast to be AI PCs'],
+  ['270M+', 'Worldwide PC shipments in 2025'],
 ]
-function Funds() {
-  const segments = FUNDS.map(([label, , pct, color]) => ({ label, pct, color }))
+const VALIDATION = [
+  ['Microsoft', 'Vision + computer-using agents'],
+  ['OpenAI', 'Desktop context + computer use'],
+  ['Raycast', 'AI across the operating system'],
+  ['Cluely', 'Real-time contextual overlay'],
+]
+function WhyNow() {
   return (
     <Slide>
-      <Head no="12 / 16" title="Use of Funds" />
-      <div className="cols-2" style={{ gridTemplateColumns: '0.8fr 1.2fr' }}>
-        <div className="r" style={{ justifySelf: 'center' }}>
-          <PieChart segments={segments} />
+      <Head id="why-now" title="Why Now" />
+      <h2 className="headline r" style={{ maxWidth: '24ch', marginBottom: '6px' }}>
+        The PC is becoming an <span className="grad">AI-native surface</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(18px, 3vh, 34px)', maxWidth: '70ch' }}>
+        Hardware, operating systems and AI agents are converging; the interaction
+        layer is still open.
+      </p>
+
+      <div className="stat-row r">
+        {NOW_STATS.map(([num, label]) => (
+          <div className="stat" key={num}>
+            <span className="stat__num grad">{num}</span>
+            <span className="stat__label">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="divider r" />
+
+      <div className="pairs r">
+        <span className="pairs__tag">Category validation</span>
+        {VALIDATION.map(([name, what]) => (
+          <div className="pairs__row" key={name}>
+            <b>{name}</b>
+            <span>{what}</span>
+          </div>
+        ))}
+      </div>
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        AYO is built for the transition: an independent, model-flexible companion
+        that can win on interaction, localization and workflow depth. Sources:
+        Microsoft Annual Reports; Gartner AI PC forecast (2025); Gartner PC
+        shipments (2026).
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 07 · Market ────────────────────────────────────────── */
+const FUNNEL = [
+  ['TAM', '$168B', '1.4B Windows devices × $120 / year', 'Global Windows software spend opportunity', 100],
+  ['SAM', '$12B', '100M high-intent users × $120 / year', 'Students, creators, developers, gamers and knowledge workers', 82],
+  ['SOM', '$525M ARR', '2.5M paid users × $17.49 × 12', 'Five-year management objective; ~4.4% of the estimated SAM', 64],
+]
+function Funnel() {
+  const ref = useRef(null)
+
+  useGSAP(
+    () => {
+      const tiers = gsap.utils.toArray(ref.current.querySelectorAll('.funnel__tier'))
+      if (reduced()) return
+      gsap.from(tiers, {
+        scaleX: 0.4,
+        opacity: 0,
+        transformOrigin: 'left center',
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.14,
+        delay: 0.2,
+      })
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div className="funnel" ref={ref}>
+      {FUNNEL.map(([label, value, math, desc, w]) => (
+        <div className="funnel__tier" key={label} style={{ width: `${w}%` }}>
+          <span className="funnel__label">{label}</span>
+          <span className="funnel__value">{value}</span>
+          <span className="funnel__math">{math}</span>
+          <span className="funnel__desc">{desc}</span>
         </div>
-        <div className="lines r">
-          {FUNDS.map(([title, desc, pct, color]) => (
-            <div className="line-item" key={title} style={{ gridTemplateColumns: '60px 1fr' }}>
-              <span className="line-item__no" style={{ color }}>
-                {pct}%
-              </span>
-              <div>
-                <div className="line-item__text" style={{ fontSize: 'clamp(15px, 1.4vw, 21px)' }}>
-                  {title}
-                </div>
-                <div className="line-item__sub">{desc}</div>
-              </div>
+      ))}
+    </div>
+  )
+}
+function Market() {
+  return (
+    <Slide>
+      <Head id="market" title="Market" />
+      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '6px' }}>
+        A massive installed base; a{' '}
+        <span className="grad">focused path</span> into it.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(16px, 3vh, 30px)', maxWidth: '70ch' }}>
+        Bottom-up sizing converts the Windows universe into a practical paid-user
+        objective.
+      </p>
+
+      <div className="r">
+        <Funnel />
+      </div>
+
+      <p className="note r" style={{ marginTop: '16px' }}>
+        Sizing is intentionally bottom-up. It is a planning framework — not a
+        third-party market forecast. Windows installed base: Microsoft. SAM and
+        SOM are AYO management estimates.
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 08 · Traction ──────────────────────────────────────── */
+const TRACTION = [
+  ['1,130+', 'People on the waitlist'],
+  ['71+', 'Active users'],
+  ['180K+', 'Organic views / impressions'],
+  ['15', 'Customer interviews'],
+  ['2', 'Early paid subscriptions'],
+]
+const FINANCING = [
+  ['$15K angel SAFE', 'Committed'],
+  ['$60K Ibtikar five-month plan', 'In discussion; terms being agreed'],
+  ['$75K initial validation capital', '15% of the $500K round'],
+]
+function Traction() {
+  return (
+    <Slide>
+      <Head id="traction" title="Traction" />
+      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '6px' }}>
+        Early demand — and a five-month plan to{' '}
+        <span className="grad">prove retention</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(18px, 3vh, 32px)', maxWidth: '70ch' }}>
+        AYO has market signal, early willingness to pay and a focused evidence
+        program.
+      </p>
+
+      <div className="stat-strip r" style={{ '--n': TRACTION.length }}>
+        {TRACTION.map(([num, label]) => (
+          <div className="stat-strip__item" key={label}>
+            <b>{num}</b>
+            <span>{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="pairs r" style={{ marginTop: 'clamp(18px, 3vh, 32px)' }}>
+        <span className="pairs__tag">Financing status</span>
+        {FINANCING.map(([what, state]) => (
+          <div className="pairs__row" key={what}>
+            <b>{what}</b>
+            <span>{state}</span>
+          </div>
+        ))}
+      </div>
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        This is evidence of momentum — not a claim of product–market fit. The next
+        five months are designed to test conversion, CAC and retention. Source:
+        AYO management data and current financing documents, August 2026.
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 09 · Business model ────────────────────────────────── */
+const TIERS = [
+  ['Free', '$0', '/ month', 'Try the companion'],
+  ['Explorer', '$5', '/ month', 'Light monthly use'],
+  ['Plus', '$14.99', '/ month', 'Primary paid plan'],
+  ['Pro', '$30', '/ month', 'High-intensity users'],
+]
+const LADDER = [
+  ['Land', 'Free + Explorer'],
+  ['Monetize', 'Plus'],
+  ['Deepen', 'Pro'],
+]
+function BusinessModel() {
+  return (
+    <Slide>
+      <Head id="model" title="Business Model" />
+      <h2 className="headline r" style={{ maxWidth: '28ch', marginBottom: '6px' }}>
+        Consumer simplicity;{' '}
+        <span className="grad">software margins</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(16px, 3vh, 28px)', maxWidth: '72ch' }}>
+        Freemium drives reach. Paid plans monetize intensity. Recurring
+        subscriptions compound as usage deepens.
+      </p>
+
+      <div className="tiers r" style={{ '--n': TIERS.length }}>
+        {TIERS.map(([name, price, per, desc]) => (
+          <div className={`tier${name === 'Plus' ? ' tier--accent' : ''}`} key={name}>
+            <span className="tier__name">{name}</span>
+            {price && <span className="tier__price">{price}</span>}
+            <span className="tier__per">{per}</span>
+            <span className="tier__desc">{desc}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="model-foot r">
+        <div className="model-foot__arpu">
+          <b className="grad">$17.49</b>
+          <span>Blended paid ARPU</span>
+        </div>
+        <div className="ladder">
+          {LADDER.map(([step, what]) => (
+            <div className="ladder__step" key={step}>
+              <b>{step}</b>
+              <span>{what}</span>
             </div>
           ))}
         </div>
       </div>
-      <p className="note r" style={{ marginTop: '16px' }}>
-        Because we build the product ourselves, most of the capital goes straight
-        into distribution. Indicative allocation.
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        Recurring subscriptions + usage economics; future marketplace /
+        integration revenue is optional upside, not in the base case. Pricing and
+        blended ARPU: AYO management assumptions, August 2026.
       </p>
     </Slide>
   )
 }
 
-/* ── 11 · Why AYO Can Spread ────────────────────────────── */
-const CONTEXTS = ['Work', 'University', 'Meetings', 'Public spaces', 'Quiet environments', 'Focus sessions']
-const REACTIONS = [
-  <>“Wait — I can point at <span className="grad">anything</span> and ask?”</>,
-  <>“It can <span className="grad">see and understand</span> everything I was working on.”</>,
-  <>“It knows what I was doing <span className="grad">2 hours ago</span> — good, I forgot.”</>,
+/* ── 10 · Positioning ───────────────────────────────────── */
+const MAP_POINTS = [
+  ['Manual copy–paste', 19, 87, 'manual'],
+  ['ChatGPT Desktop', 26, 64],
+  ['Cluely', 30, 28],
+  ['Raycast', 54, 44],
+  ['Microsoft Copilot', 60, 68],
+  ['AYO', 82, 16, 'ayo'],
 ]
-function Spread() {
+const AYO_EDGES = [
+  ['Wake word', 'Hands-free'],
+  ['Hover', 'Point at context'],
+  ['Silent', 'Discreet command'],
+  ['Proactive', 'Next-step help'],
+  ['Localized', 'Arabic / GCC roadmap'],
+]
+function PositionMap() {
+  const ref = useRef(null)
+
+  useGSAP(
+    () => {
+      const pts = gsap.utils.toArray(ref.current.querySelectorAll('.map__pt'))
+      if (reduced()) return
+      gsap.from(pts, {
+        scale: 0,
+        opacity: 0,
+        transformOrigin: '50% 50%',
+        duration: 0.45,
+        ease: 'back.out(2)',
+        stagger: 0.09,
+        delay: 0.25,
+      })
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div className="map" ref={ref}>
+      <span className="map__axis map__axis--y-top">Always-present + contextual</span>
+      <span className="map__axis map__axis--y-bot">App / session specific</span>
+      <span className="map__axis map__axis--x-left">Answers</span>
+      <span className="map__axis map__axis--x-right">Action across apps</span>
+      <div className="map__plot">
+        <span className="map__gridline map__gridline--v" />
+        <span className="map__gridline map__gridline--h" />
+        {MAP_POINTS.map(([name, x, y, kind]) => (
+          <span
+            className={`map__pt${kind ? ` map__pt--${kind}` : ''}`}
+            key={name}
+            style={{ left: `${x}%`, top: `${y}%` }}
+          >
+            <i />
+            {name}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+function Positioning() {
   return (
     <Slide>
-      <Head no="13 / 16" title="Why AYO Can Spread" />
-      <div className="cols-2">
+      <Head id="positioning" title="Positioning" />
+      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '6px' }}>
+        AYO competes on the{' '}
+        <span className="grad">interaction layer</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.4vh, 24px)', maxWidth: '72ch' }}>
+        The category is crowded at the model and app layer; AYO’s advantage is how
+        intelligence is reached and used.
+      </p>
+
+      <div className="cols-2" style={{ alignItems: 'center' }}>
         <div className="r">
-          <RotatingQuote items={REACTIONS} />
+          <PositionMap />
         </div>
-        <div className="stack gap-md">
-          <p className="lead r">
-            AYO has a strong demo loop — when people see it, they understand it. It
-            works by voice today, and a <b style={{ color: 'var(--ink)' }}>silent
-            mode is in development</b>, built to feel as smooth and efficient as
-            voice commands — practical anywhere:
+        <div className="stack gap-sm">
+          <p className="lead lead--accent r" style={{ maxWidth: '30ch' }}>
+            Voice + hover + silent + proactive, in one layer.
           </p>
-          <div className="chips r">
-            {CONTEXTS.map((c) => (
-              <span className="chip" key={c}>
-                {c}
-              </span>
+          <div className="lines lines--tight r" style={{ width: '100%' }}>
+            {AYO_EDGES.map(([title, sub], i) => (
+              <div className="line-item" key={title}>
+                <span className="line-item__no">{pad(i + 1)}</span>
+                <div>
+                  <div className="line-item__text">{title}</div>
+                  <div className="line-item__sub">{sub}</div>
+                </div>
+              </div>
             ))}
           </div>
-          <p className="body r">
-            Suited for creator demos, tech reviews, productivity videos, and
-            student, developer, and founder workflows. The product is not just
-            useful — it is showable.
-          </p>
         </div>
       </div>
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        Illustrative positioning based on public product pages, accessed August
+        2026.
+      </p>
     </Slide>
   )
 }
 
-/* ── 12 · Future Plans ──────────────────────────────────── */
-const FUTURE = [
-  ['01', 'Mobile companion', 'Use your phone to trigger actions on your computer — open something, prepare a file, summarize activity, continue a task remotely.'],
-  ['02', 'Personal cloud context', 'Connect your own cloud storage so AYO can access approved files and context across devices — with you in control.'],
-  ['03', 'Mac & Linux support', 'Expand beyond Windows to support MacBooks and Linux users.'],
-  ['04', 'Agent-to-agent', 'Coordinate actions between AI systems — the desktop layer that talks to other agents and tools.'],
+/* ── 11 · Go-to-market ──────────────────────────────────── */
+const GTM_STEPS = [
+  ['1', 'Show', 'Creator demos + product storytelling'],
+  ['2', 'Activate', 'Waitlist + tracked landing pages'],
+  ['3', 'Trial', '14-day Plus trial; card required'],
+  ['4', 'Convert', 'Paid cohort by source and persona'],
+  ['5', 'Retain', 'Renewal, churn and daily engagement'],
 ]
-function Future() {
+const ENGINE = [
+  'Major YouTube creator integrations',
+  'Professional product demos',
+  'UGC + niche creators',
+  'Paid amplification',
+  'Referral loops + Arabic/GCC content',
+]
+const GATES = [
+  ['≤ $45', 'All-in paid CAC target'],
+  ['35%', 'Trial-to-paid target'],
+  ['≥ 1,000', 'Paid users by M4 target'],
+]
+function GoToMarket() {
   return (
     <Slide>
-      <Head no="14 / 16" title="Future Plans" />
-      <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        {FUTURE.map(([no, title, desc]) => (
-          <div className="card" key={no}>
-            <span className="card__no">{no}</span>
-            <span className="card__title">{title}</span>
-            <span className="card__desc">{desc}</span>
+      <Head id="gtm" title="Go-to-Market" />
+      <h2 className="headline r" style={{ maxWidth: '28ch', marginBottom: '6px' }}>
+        Demonstration first. Cohort evidence second.{' '}
+        <span className="grad">Scale third.</span>
+      </h2>
+      <p className="lead r" style={{ maxWidth: '72ch' }}>
+        AYO is experienced visually, so creator-led proof is the acquisition
+        wedge — and retention is the gate.
+      </p>
+
+      <FlowRail steps={GTM_STEPS} />
+
+      <div className="cols-2" style={{ alignItems: 'stretch' }}>
+        <div className="r">
+          <Panel tag="Acquisition engine">
+            <ul className="mini">
+              {ENGINE.map((e) => (
+                <li key={e}>{e}</li>
+              ))}
+            </ul>
+          </Panel>
+        </div>
+        <div className="r">
+          <Panel accent tag="Scale gates">
+            <div className="gates">
+              {GATES.map(([num, label]) => (
+                <div className="gates__item" key={label}>
+                  <b>{num}</b>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      </div>
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        Targets and assumptions: AYO five-month financial model v2.4.
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 12 · Validation plan ───────────────────────────────── */
+const MONTHS = [
+  ['M1', 'Ready', ['Product hardening', 'Billing + attribution', 'Code signing']],
+  ['M2', 'Launch', ['Creator campaign', '14-day Plus trial', 'Tracked cohorts']],
+  ['M3', 'Convert', ['Paid cohort', 'CAC + MRR report', 'Usage depth']],
+  ['M4', 'Renew', ['First renewal', 'Churn evidence', 'Referral signal']],
+  ['M5', 'Decide', ['Consolidated CAC', 'Retention + churn', 'Scale decision']],
+]
+const OUTPUTS = [
+  ['$20.4K', 'M5 ending MRR'],
+  ['1,168', 'M5 paid users'],
+  ['74.5%', 'M5 gross margin'],
+  ['+$0.9K', 'M5 monthly EBITDA'],
+]
+function Timeline() {
+  const ref = useRef(null)
+
+  useGSAP(
+    () => {
+      const cols = gsap.utils.toArray(ref.current.querySelectorAll('.tl__col'))
+      if (reduced()) return
+      gsap
+        .timeline({ delay: 0.2 })
+        .from('.tl__rail', {
+          scaleX: 0,
+          transformOrigin: 'left',
+          duration: 0.85,
+          ease: 'power2.out',
+        })
+        .from(cols, { opacity: 0, y: 14, duration: 0.4, stagger: 0.1 }, '-=0.6')
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div className="tl" ref={ref}>
+      <div className="tl__rail" />
+      <div className="tl__cols">
+        {MONTHS.map(([m, phase, items], i) => (
+          <div className={`tl__col${i === MONTHS.length - 1 ? ' tl__col--last' : ''}`} key={m}>
+            <span className="tl__m">{m}</span>
+            <span className="tl__phase">{phase}</span>
+            <ul className="mini mini--tight">
+              {items.map((it) => (
+                <li key={it}>{it}</li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
-      <p className="statement r" style={{ marginTop: '30px', maxWidth: '40ch' }}>
-        AYO becomes the user’s AI <span className="grad">operating layer</span> across
-        devices, files, apps, and agents.
+    </div>
+  )
+}
+function ValidationPlan() {
+  return (
+    <Slide>
+      <Head id="validation" title="Validation Plan" />
+      <h2 className="headline r" style={{ maxWidth: '28ch', marginBottom: '6px' }}>
+        Five months turn product belief into{' '}
+        <span className="grad">investment evidence</span>.
+      </h2>
+      <p className="lead r" style={{ maxWidth: '72ch' }}>
+        The $75K phase is designed to answer one question: should AYO scale
+        acquisition and expansion?
+      </p>
+
+      <div className="r">
+        <Timeline />
+      </div>
+
+      <div className="stat-strip r">
+        {OUTPUTS.map(([num, label]) => (
+          <div className="stat-strip__item" key={label}>
+            <b>{num}</b>
+            <span>{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        Base-case planning outputs — not guarantees. Live cohort evidence replaces
+        assumptions as it arrives. Source: AYO five-month validation &amp;
+        12-month planning model v2.4.
       </p>
     </Slide>
   )
 }
 
-/* ── 15 · The Team ──────────────────────────────────────── */
+/* ── 13 · Roadmap ───────────────────────────────────────── */
+const PHASES = [
+  [
+    'Now → M5',
+    'Prove',
+    [
+      'Windows reliability + trust',
+      'Wake word, hover and silent mode',
+      'Gaming mode + minimal contextual HUD',
+      'Activation, paid conversion and retention',
+      'Measurable creator acquisition',
+    ],
+  ],
+  [
+    'M6 → M12',
+    'Expand',
+    [
+      'Arabic + multilingual experience',
+      'Mobile companion + cross-device continuity',
+      'Saudi/GCC creator and campus growth',
+      'Deeper app and workflow integrations',
+    ],
+  ],
+  [
+    'M12 → M18',
+    'Platform',
+    [
+      'Agent-to-agent coordination across tools',
+      'Tool-routing and integration marketplace',
+      'Mac/Linux readiness based on demand',
+    ],
+  ],
+]
+const TARGETS = ['Higgsfield / video', 'Manus / presentations', 'Replit / apps & sites', 'Productivity + knowledge tools']
+function Roadmap() {
+  return (
+    <Slide>
+      <Head id="roadmap" title="Roadmap" />
+      <h2 className="headline r" style={{ maxWidth: '30ch', marginBottom: '6px' }}>
+        Validate the wedge. Expand the surfaces.{' '}
+        <span className="grad">Become the layer.</span>
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(16px, 3vh, 28px)', maxWidth: '74ch' }}>
+        Consumer proof creates the right to enter Arabic/GCC, mobile continuity,
+        gaming and deeper integrations.
+      </p>
+
+      <div className="phases r">
+        {PHASES.map(([when, name, items], i) => (
+          <div className={`phase${i === 0 ? ' phase--now' : ''}`} key={name}>
+            <span className="phase__when">{when}</span>
+            <span className="phase__name">{name}</span>
+            <ul className="mini">
+              {items.map((it) => (
+                <li key={it}>{it}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="targets r">
+        <span className="targets__tag">Target workflow integrations</span>
+        <div className="chips">
+          {TARGETS.map((t) => (
+            <span className="chip" key={t}>
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <p className="note r" style={{ marginTop: '12px' }}>
+        Target integrations are exploratory roadmap items; no partnership is
+        implied.
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 14 · Team ──────────────────────────────────────────── */
 const TEAM = [
-  [
-    '01',
-    'Omar — Founder & CEO',
-    'Sets the vision and direction for AYO. Leads on product strategy, fundraising, and the partnerships that move the company forward, keeping the team pointed at what matters most.',
-  ],
-  [
-    '02',
-    'Ayman — Co-Founder & COO/CFO',
-    'Runs operations and finances. Turns the vision into a working plan: budgets, growth, and the day-to-day machinery that keeps AYO shipping and sustainable.',
-  ],
-  [
-    '03',
-    'Yazan — Co-Founder & CTO',
-    "Architects AYO's desktop platform and leads engineering, building the on device, privacy-first foundation the product is known for.",
-  ],
-  [
-    '04',
-    'Marketing & Development Team — Ahmad, Qusay & Qais',
-    "The hands assisting and spreading AYO. From engineering features to getting the product in front of the people who'll love it, this team keeps development and growth moving in parallel.",
-  ],
+  ['OJ', 'Omar Jaber', 'CEO · Product & vision'],
+  ['AA', 'Ayman Arafat', 'COO / CFO · Operations'],
+  ['YA', 'Yazan Aydi', 'CTO · Architecture'],
+  ['Q', 'Qusay', 'Product engineering'],
+  ['Q', 'Qais', 'Growth & marketing'],
+]
+const ADVISORS = [
+  ['Middleframe CEO', 'Strategic product, positioning and company-building guidance'],
+  ['Orange Corners', 'Continued tailored mentoring and ecosystem support'],
 ]
 function Team() {
   return (
     <Slide>
-      <Head no="15 / 16" title="The Team" />
-      <div className="card-grid r" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-        {TEAM.map(([no, title, desc]) => (
-          <div className="card" key={no}>
-            <span className="card__no">{no}</span>
-            <span className="card__title">{title}</span>
-            <span className="card__desc">{desc}</span>
+      <Head id="team" title="Team" />
+      <h2 className="headline r" style={{ maxWidth: '28ch', marginBottom: '6px' }}>
+        Founder-led execution with a deliberately{' '}
+        <span className="grad">lean core</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(18px, 3vh, 32px)', maxWidth: '74ch' }}>
+        Product, operations, engineering and growth are owned internally; advisors
+        shorten the learning curve.
+      </p>
+
+      <div className="people r">
+        {TEAM.map(([initials, name, role]) => (
+          <div className="person" key={name}>
+            <span className="person__av">{initials}</span>
+            <span className="person__name">{name}</span>
+            <span className="person__role">{role}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="pairs r" style={{ marginTop: 'clamp(18px, 3vh, 32px)' }}>
+        <span className="pairs__tag">Advisory backbone</span>
+        {ADVISORS.map(([name, what]) => (
+          <div className="pairs__row" key={name}>
+            <b>{name}</b>
+            <span>{what}</span>
           </div>
         ))}
       </div>
@@ -1254,7 +1093,203 @@ function Team() {
   )
 }
 
-/* ── 16 · Closing ───────────────────────────────────────── */
+/* ── 16 · The round ─────────────────────────────────────── */
+const USE_OF_FUNDS = [
+  ['Core product + engineering', 45, '#6d4bff'],
+  ['Growth + distribution', 30, '#2f6bff'],
+  ['Arabic + GCC + mobile', 15, '#ff8a3d'],
+  ['Security, legal + operations', 10, '#21c7d6'],
+]
+function AllocBar() {
+  const ref = useRef(null)
+
+  useGSAP(
+    () => {
+      if (reduced()) return
+      gsap.from(ref.current.querySelectorAll('span'), {
+        scaleX: 0,
+        transformOrigin: 'left',
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.09,
+        delay: 0.25,
+      })
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div className="alloc" ref={ref}>
+      {USE_OF_FUNDS.map(([label, pct, color]) => (
+        <span key={label} style={{ width: `${pct}%`, background: color }} />
+      ))}
+    </div>
+  )
+}
+function RoundBar() {
+  const ref = useRef(null)
+
+  useGSAP(
+    () => {
+      if (reduced()) return
+      gsap.from(ref.current.querySelectorAll('.round-bar__track > div'), {
+        scaleX: 0,
+        transformOrigin: 'left',
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.12,
+        delay: 0.25,
+      })
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div className="round-bar" ref={ref}>
+      <div className="round-bar__track">
+        <div className="round-bar__secured" style={{ width: '3%' }} />
+        <div className="round-bar__talks" style={{ width: '12%' }} />
+      </div>
+      <div className="round-bar__legend">
+        <span>
+          <b>$15K</b> committed
+        </span>
+        <span>
+          <b>$60K</b> in discussion
+        </span>
+        <span>
+          <b>$425K</b> open
+        </span>
+      </div>
+    </div>
+  )
+}
+function TheRound() {
+  return (
+    <Slide>
+      <Head id="round" title="The Round" />
+      <h2 className="headline r" style={{ maxWidth: '28ch', marginBottom: '6px' }}>
+        The first $75K proves AYO. The remaining{' '}
+        <span className="grad">$425K scales it</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.4vh, 26px)', maxWidth: '74ch' }}>
+        AYO is raising a $500K pre-seed round with deployment gated by evidence
+        from the five-month plan.
+      </p>
+
+      <div className="cols-2" style={{ alignItems: 'start' }}>
+        <div className="stack gap-sm">
+          <div className="round-total r">
+            <b>$500K</b>
+            <span>Total pre-seed target</span>
+          </div>
+          <div className="r">
+            <RoundBar />
+          </div>
+          <div className="pairs r">
+            <div className="pairs__row">
+              <b>$15K angel SAFE</b>
+              <span>Committed</span>
+            </div>
+            <div className="pairs__row">
+              <b>$60K Ibtikar plan</b>
+              <span>In discussion; terms being agreed</span>
+            </div>
+          </div>
+          <div className="callout r">
+            Proposed role for Sadu: <b>lead or co-lead the balance</b>, with
+            milestone-based deployment after M5 evidence.
+          </div>
+        </div>
+
+        <div className="stack gap-sm">
+          <span className="pairs__tag r">$425K use of funds</span>
+          <div className="r">
+            <AllocBar />
+          </div>
+          <div className="legend r">
+            {USE_OF_FUNDS.map(([label, pct, color]) => (
+              <div className="legend__row" key={label}>
+                <i style={{ background: color }} />
+                <span>{label}</span>
+                <b>{pct}%</b>
+              </div>
+            ))}
+          </div>
+          <p className="body r">
+            18-month scale plan · product-led growth → Arabic/GCC → mobile
+            continuity.
+          </p>
+        </div>
+      </div>
+
+      <p className="statement r" style={{ marginTop: 'clamp(16px, 3vh, 30px)', maxWidth: '44ch' }}>
+        Build the easiest way to use AI — then make it the{' '}
+        <span className="grad">new way people use computers</span>.
+      </p>
+
+      <p className="note r" style={{ marginTop: '12px' }}>
+        Financing status as of August 2026; future participation remains subject
+        to diligence and approval.
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 17 · Appendix ──────────────────────────────────────── */
+const SOURCES = [
+  ['Microsoft Annual Report 2022', '1.4B+ active Windows 10/11 devices', 'https://www.microsoft.com/investor/reports/ar22/index.html'],
+  ['Gartner, Aug. 2025', '143M AI PCs / 55% share forecast for 2026', 'https://www.gartner.com/en/newsroom/press-releases/2025-08-28-gartner-says-artificial-intelligence-pcs-will-represent-31-percent-of-worldwide-pc-market-by-the-end-of-2025'],
+  ['Gartner, Jan. 2026', '270M+ worldwide PC shipments in 2025', 'https://www.gartner.com/en/newsroom/press-releases/2026-1-20-gartner-says-worldwide-pc-shipments-increased-9-point-3-percent-in-fourth-quarter-of-2025-and-9-point-1-percent-for-the-full-year'],
+  ['Microsoft Copilot', 'Vision and computer-using agents', 'https://www.microsoft.com/en-us/microsoft-copilot/blog/2025/06/12/copilot-vision-on-windows-with-highlights-is-now-available-in-the-u-s'],
+  ['OpenAI', 'Desktop context and computer use', 'https://openai.com/index/chatgpt-for-your-most-ambitious-work'],
+  ['Raycast', 'AI that works with the operating system', 'https://www.raycast.com/core-features/ai'],
+  ['Cluely', 'Real-time, screen-aware meeting assistant', 'https://cluely.com'],
+  ['Sadu Capital', 'Early-stage applied AI and scalable software focus', 'https://www.sadu.vc/the-most-active-vc-firms-in-mena'],
+  ['Replit Agent', 'Natural-language app and website creation', 'https://replit.com/products/agent'],
+  ['Manus Slides', 'AI-generated presentations', 'https://manus.im/docs/features/slides'],
+  ['Higgsfield', 'AI video and image generation platform', 'https://higgsfield.ai/ai-video'],
+  ['AYO internal', 'Traction, pricing, forecasts and financing status', null],
+]
+function Appendix() {
+  return (
+    <Slide>
+      <Head id="appendix" title="Appendix" />
+      <h2 className="headline r" style={{ maxWidth: '28ch', marginBottom: '6px' }}>
+        Sources, definitions and{' '}
+        <span className="grad">important notes</span>.
+      </h2>
+      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.4vh, 24px)', maxWidth: '74ch' }}>
+        External market and competitor claims use public primary sources. Internal
+        metrics are management-reported.
+      </p>
+
+      <div className="sources r">
+        {SOURCES.map(([name, what, href]) => {
+          const Tag = href ? 'a' : 'div'
+          const props = href ? { href, target: '_blank', rel: 'noreferrer' } : {}
+          return (
+            <Tag className="source" key={name} {...props}>
+              <span className="source__name">{name}</span>
+              <span className="source__what">{what}</span>
+              <span className="source__url">
+                {href ? `${new URL(href).hostname.replace('www.', '')} ↗` : 'Planning model v2.4, August 2026'}
+              </span>
+            </Tag>
+          )
+        })}
+      </div>
+
+      <p className="note r" style={{ marginTop: '14px' }}>
+        Important: TAM/SAM/SOM, roadmap timing, forecasts and financing outcomes
+        are planning estimates — not guarantees. Target integrations do not imply
+        signed partnerships.
+      </p>
+    </Slide>
+  )
+}
+
+/* ── 18 · Thank you ─────────────────────────────────────── */
 const LINKS = [
   ['Website', 'heyayo.com', 'https://heyayo.com/'],
   ['Instagram', '@ayosystems', 'https://www.instagram.com/ayosystems'],
@@ -1264,28 +1299,41 @@ const LINKS = [
 function Closing() {
   return (
     <Slide>
-      <span className="kicker kicker--clear-brand r">Closing</span>
-      <h2 className="headline r" style={{ margin: '18px 0 8px', maxWidth: '20ch' }}>
-        AYO makes the computer feel like it finally{' '}
-        <span className="grad">understands</span> what you are doing.
-      </h2>
-      <p className="lead r" style={{ marginBottom: '8px' }}>
-        Not another chatbot — an AI layer for the desktop. The first push showed
-        people notice it. The next stage proves they use it, trust it, and pay
-        for it.
-      </p>
-      <div className="links r">
-        {LINKS.map(([label, handle, href]) => (
-          <a className="link-row" href={href} target="_blank" rel="noreferrer" key={label}>
-            <span className="link-row__label">
-              <span className="brand__dot" />
-              {label}
-            </span>
-            <span className="link-row__url">
-              {handle} <span aria-hidden>↗</span>
-            </span>
-          </a>
-        ))}
+      <div className="cols-2">
+        <div className="stack gap-md">
+          <span className="kicker r">Prepared for Sadu Capital</span>
+          <h1 className="display r">
+            Thank <span className="grad">you</span>.
+          </h1>
+          <p className="lead r">
+            The first $75K proves AYO. The next stage makes the AI interface for
+            the PC the way people work every day.
+          </p>
+          <div className="row r">
+            <span className="tag">Pre-Seed · August 2026</span>
+            <span className="eyebrow">AYO Systems</span>
+          </div>
+        </div>
+
+        <div className="links r">
+          {LINKS.map(([label, handle, href]) => (
+            <a
+              className="link-row"
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              key={label}
+            >
+              <span className="link-row__label">
+                <span className="brand__dot" />
+                {label}
+              </span>
+              <span className="link-row__url">
+                {handle} <span aria-hidden>↗</span>
+              </span>
+            </a>
+          ))}
+        </div>
       </div>
     </Slide>
   )
@@ -1293,19 +1341,20 @@ function Closing() {
 
 export const SLIDES = [
   { id: 'opening', title: 'Opening', Component: Opening },
-  { id: 'different', title: 'Why AYO Is Different', Component: WhyDifferent },
-  { id: 'landscape', title: 'The Landscape', Component: Landscape },
   { id: 'problem', title: 'The Problem', Component: Problem },
   { id: 'product', title: 'The Product', Component: Product },
+  { id: 'how', title: 'How It Works', Component: HowItWorks },
+  { id: 'experience', title: 'Experience', Component: Experience },
   { id: 'why-now', title: 'Why Now', Component: WhyNow },
-  { id: 'signal', title: 'Early Signal', Component: EarlySignal },
-  { id: 'learned', title: 'What We Learned', Component: Learned },
-  { id: 'growth', title: 'Growth Strategy', Component: Growth },
-  { id: 'model', title: 'Growth Model', Component: Model },
-  { id: 'raise', title: 'The Raise', Component: Raise },
-  { id: 'funds', title: 'Use of Funds', Component: Funds },
-  { id: 'spread', title: 'Why AYO Spreads', Component: Spread },
-  { id: 'future', title: 'Future Plans', Component: Future },
-  { id: 'team', title: 'The Team', Component: Team },
-  { id: 'closing', title: 'Closing', Component: Closing },
+  { id: 'market', title: 'Market', Component: Market },
+  { id: 'traction', title: 'Traction', Component: Traction },
+  { id: 'model', title: 'Business Model', Component: BusinessModel },
+  { id: 'positioning', title: 'Positioning', Component: Positioning },
+  { id: 'gtm', title: 'Go-to-Market', Component: GoToMarket },
+  { id: 'validation', title: 'Validation Plan', Component: ValidationPlan },
+  { id: 'roadmap', title: 'Roadmap', Component: Roadmap },
+  { id: 'team', title: 'Team', Component: Team },
+  { id: 'round', title: 'The Round', Component: TheRound },
+  { id: 'appendix', title: 'Appendix', Component: Appendix },
+  { id: 'closing', title: 'Thank You', Component: Closing },
 ]
