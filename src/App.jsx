@@ -74,9 +74,22 @@ export default function App() {
     { dependencies: [index], scope: appRef },
   )
 
+  const toggleFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.()
+    } else {
+      document.documentElement.requestFullscreen?.().catch(() => {})
+    }
+  }, [])
+
   /* Keyboard navigation */
   useEffect(() => {
     const onKey = (e) => {
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault()
+        toggleFullscreen()
+        return
+      }
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':
@@ -105,7 +118,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go, goTo])
+  }, [go, goTo, toggleFullscreen])
 
   /* Wheel / trackpad navigation with cooldown */
   useEffect(() => {
@@ -176,7 +189,7 @@ export default function App() {
         <b>{String(index + 1).padStart(2, '0')}</b>&nbsp;/&nbsp;{String(TOTAL).padStart(2, '0')}
       </div>
       <div className="chrome chrome--bl">{SLIDES[index].title}</div>
-      <div className="chrome chrome--br">Confidential · Sadu Capital</div>
+      <div className="chrome chrome--br">Confidential · Ibtikar</div>
 
       {/* nav dots */}
       <nav className="dots" aria-label="Slide navigation">
@@ -201,7 +214,9 @@ export default function App() {
       <div className="nav-hint">
         <kbd>←</kbd>
         <kbd>→</kbd>
-        <span>scroll or use arrow keys</span>
+        <span>arrows to move</span>
+        <kbd>F</kbd>
+        <span>full screen</span>
       </div>
     </div>
   )
