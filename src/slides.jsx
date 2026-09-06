@@ -13,7 +13,7 @@ const ORDER = [
   'solution',
   'how',
   'traction',
-  'gtm',
+  'model',
   'moat',
   'validation',
   'team',
@@ -705,7 +705,7 @@ function Traction() {
         </div>
       </div>
 
-      <Bridge>Here is how we take it to market.</Bridge>
+      <Bridge>Here is who pays for AYO, and in what order.</Bridge>
 
       <p className="note r" style={{ marginTop: '10px' }}>
         AYO management data, September 2026. Early signal, not product market fit.
@@ -715,7 +715,7 @@ function Traction() {
 }
 
 /* =========================================================
-   07 Go to market
+   07 Business model
    ========================================================= */
 const TIERS = [
   ['Free', '$0', '/ month', 'Try AYO every day'],
@@ -744,10 +744,10 @@ const PHASES = [
     false,
   ],
 ]
-function GoToMarket() {
+function BusinessModel() {
   return (
     <Slide>
-      <Head id="gtm" title="Go to Market" />
+      <Head id="model" title="Business Model" />
       <h2 className="headline r" style={{ maxWidth: '24ch', marginBottom: '6px' }}>
         B2C first. <span className="grad">B2B later.</span>
       </h2>
@@ -1206,7 +1206,7 @@ export const SLIDES = [
   { id: 'solution', title: 'The Solution', Component: Solution },
   { id: 'how', title: 'How It Works', Component: HowItWorks },
   { id: 'traction', title: 'Early Demand', Component: Traction },
-  { id: 'gtm', title: 'Go to Market', Component: GoToMarket },
+  { id: 'model', title: 'Business Model', Component: BusinessModel },
   { id: 'moat', title: 'Why It Is Hard to Replace', Component: Moat },
   { id: 'validation', title: 'The Ask', Component: Validation },
   { id: 'team', title: 'Team', Component: Team },
