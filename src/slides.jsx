@@ -10,7 +10,7 @@ const ORDER = [
   'opening',
   'gap',
   'friction',
-  'solution',
+  'experience',
   'how',
   'traction',
   'model',
@@ -485,95 +485,139 @@ function Friction() {
         </div>
       </div>
 
-      <Bridge>AYO removes the integration from the equation.</Bridge>
+      <Bridge>So we built a different kind of assistant.</Bridge>
     </Slide>
   )
 }
 
 /* =========================================================
-   04 The solution
+   04 Product experience: the three ways to reach AYO
    ========================================================= */
-const LAYERS = [
+const MODES = [
   [
-    'What the user sees',
-    'One assistant',
-    'Understands the screen, answers by voice or text, finishes tasks in the apps already open.',
-    ['Voice or text', 'Screen aware', 'Acts with approval'],
-    false,
+    'voice',
+    'Wake word',
+    'Say “Hey AYO” from anywhere.',
+    'Hands-free help without leaving what you are doing, even while working or gaming.',
   ],
   [
-    'What we built',
-    'A universal execution layer',
-    'AYO operates Windows the way a person does, so a workflow needs no integration. Even software with no API.',
-    ['Screen understanding', 'Planning', 'Windows control', 'Permission rules'],
-    true,
+    'silent',
+    'Silent mode',
+    'Press a shortcut and type privately.',
+    'Instant access for the moments when speaking is not practical.',
   ],
   [
-    'What it reaches',
-    'Anything on the PC',
-    'The surface is the operating system, not a list of supported partners.',
-    ['Browser', 'Office', 'Design tools', 'Internal software', 'Games'],
-    false,
+    'space',
+    'AYO workspace',
+    'Open AYO’s home base.',
+    'Conversations, tasks, reminders, activity and preferences in one place.',
   ],
 ]
-function LayerStack() {
+
+/* A small live sketch of each entry point, so the modes read as product
+   rather than as three paragraphs. */
+function ModeViz({ kind }) {
+  if (kind === 'voice') {
+    return (
+      <div className="viz">
+        <span className="viz__pill">
+          <span className="brand__dot" />
+          Hey AYO
+        </span>
+        <span className="viz__bars">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <i key={i} />
+          ))}
+        </span>
+      </div>
+    )
+  }
+
+  if (kind === 'silent') {
+    return (
+      <div className="viz">
+        <span className="viz__keys">
+          <kbd>Ctrl</kbd>
+          <kbd>Space</kbd>
+        </span>
+        <span className="viz__field">
+          summarize this page
+          <i className="viz__caret" />
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="viz">
+      <span className="viz__rail">
+        {['tasks', 'notes', 'activity'].map((r) => (
+          <i key={r} />
+        ))}
+      </span>
+      <span className="viz__panel">
+        <i style={{ width: '72%' }} />
+        <i style={{ width: '46%' }} />
+        <i style={{ width: '58%' }} />
+      </span>
+    </div>
+  )
+}
+
+function Experience() {
   const ref = useRef(null)
 
   useGSAP(
     () => {
-      const rows = gsap.utils.toArray(ref.current.querySelectorAll('.layer'))
       if (reduced()) return
-      gsap.from(rows, {
+
+      gsap.to(ref.current.querySelectorAll('.viz__bars i'), {
+        scaleY: () => gsap.utils.random(0.45, 2.4),
+        duration: 0.42,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        stagger: { each: 0.07, from: 'center' },
+      })
+
+      gsap.to(ref.current.querySelectorAll('.viz__caret'), {
         opacity: 0,
-        y: 18,
-        duration: 0.5,
-        ease: 'power3.out',
-        stagger: 0.12,
-        delay: 0.15,
+        duration: 0.55,
+        ease: 'steps(1)',
+        repeat: -1,
+        yoyo: true,
       })
     },
     { scope: ref },
   )
 
   return (
-    <div className="layers" ref={ref}>
-      {LAYERS.map(([tag, name, desc, chips, core]) => (
-        <div className={`layer${core ? ' layer--core' : ''}`} key={name}>
-          <div className="layer__head">
-            <span className="layer__tag">{tag}</span>
-            <span className="layer__name">{name}</span>
-          </div>
-          <div className="layer__body">
-            <p className="layer__desc">{desc}</p>
-            <div className="chips chips--sm">
-              {chips.map((c) => (
-                <span className="chip" key={c}>
-                  {c}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-function Solution() {
-  return (
     <Slide>
-      <Head id="solution" title="The Solution" />
-      <h2 className="headline r" style={{ maxWidth: '26ch', marginBottom: '6px' }}>
-        One assistant on top. One{' '}
-        <span className="grad">execution layer</span> underneath.
+      <Head id="experience" title="Product Experience" />
+      <h2 className="headline r" style={{ maxWidth: '25ch', marginBottom: '6px' }}>
+        Your Windows agent.{' '}
+        <span className="grad">Always one call away</span>.
       </h2>
-      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.4vh, 28px)', maxWidth: '68ch' }}>
-        An AI assistant built specifically for Windows. Useful today, and the
-        foundation for scalable Windows agents tomorrow.
+      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.6vh, 30px)', maxWidth: '62ch' }}>
+        Most AI assistants wait inside another window. AYO stays available across
+        Windows.
       </p>
 
-      <div className="r">
-        <LayerStack />
+      <div className="modes r" ref={ref}>
+        {MODES.map(([kind, tag, title, desc]) => (
+          <div className="mode" key={tag}>
+            <ModeViz kind={kind} />
+            <span className="mode__tag">{tag}</span>
+            <span className="mode__title">{title}</span>
+            <span className="mode__desc">{desc}</span>
+          </div>
+        ))}
       </div>
+
+      <p className="statement r" style={{ marginTop: 'clamp(16px, 3vh, 32px)', maxWidth: '44ch' }}>
+        Speak. Type silently. Or open the workspace.{' '}
+        <span className="grad">Same agent, wherever you are.</span>
+      </p>
 
       <Bridge>
         So how does one assistant operate everything without integrating with
@@ -601,10 +645,14 @@ function HowItWorks() {
   return (
     <Slide>
       <Head id="how" title="How It Works" />
-      <h2 className="headline r" style={{ maxWidth: '22ch' }}>
+      <h2 className="headline r" style={{ maxWidth: '22ch', marginBottom: '6px' }}>
         From a spoken request to a{' '}
         <span className="grad">finished task</span>.
       </h2>
+      <p className="lead r" style={{ maxWidth: '68ch' }}>
+        One execution layer operates Windows itself, so a workflow needs no
+        integration. Even software with no API.
+      </p>
 
       <FlowRail steps={PIPELINE} />
 
@@ -1203,7 +1251,7 @@ export const SLIDES = [
   { id: 'opening', title: 'Opening', Component: Opening },
   { id: 'gap', title: 'The Gap', Component: Gap },
   { id: 'friction', title: 'Why It Is Hard', Component: Friction },
-  { id: 'solution', title: 'The Solution', Component: Solution },
+  { id: 'experience', title: 'Product Experience', Component: Experience },
   { id: 'how', title: 'How It Works', Component: HowItWorks },
   { id: 'traction', title: 'Early Demand', Component: Traction },
   { id: 'model', title: 'Business Model', Component: BusinessModel },
