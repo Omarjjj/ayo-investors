@@ -1,4 +1,4 @@
-import { Children, useRef } from 'react'
+import { Children, Fragment, useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { useReveal } from './hooks/useReveal'
@@ -11,7 +11,7 @@ const ORDER = [
   'gap',
   'friction',
   'experience',
-  'how',
+  'trust',
   'traction',
   'model',
   'moat',
@@ -210,71 +210,6 @@ function HeroDemo() {
             <em>Not now</em>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-/* =========================================================
-   Reusable numbered rail (how it works)
-   ========================================================= */
-function FlowRail({ steps }) {
-  const ref = useRef(null)
-
-  useGSAP(
-    () => {
-      const nodes = gsap.utils.toArray(ref.current.querySelectorAll('.flow__node'))
-      const labels = gsap.utils.toArray(ref.current.querySelectorAll('.flow__text'))
-      gsap.set(nodes, { scale: 0 })
-      gsap.set(labels, { opacity: 0, y: 12 })
-
-      if (reduced()) {
-        gsap.set(nodes, { scale: 1 })
-        gsap.set(labels, { opacity: 1, y: 0 })
-        return
-      }
-
-      gsap
-        .timeline({ delay: 0.25 })
-        .from('.flow__rail-fill', {
-          scaleX: 0,
-          transformOrigin: 'left',
-          duration: 0.9,
-          ease: 'power2.out',
-        })
-        .to(nodes, { scale: 1, duration: 0.38, ease: 'back.out(2)', stagger: 0.1 }, '-=0.65')
-        .to(labels, { opacity: 1, y: 0, duration: 0.38, stagger: 0.1 }, '<')
-
-      gsap.to('.flow__rail-flow', {
-        backgroundPositionX: '-=20',
-        duration: 0.85,
-        ease: 'none',
-        repeat: -1,
-      })
-    },
-    { scope: ref },
-  )
-
-  return (
-    <div className="flow" ref={ref}>
-      <div className="flow__rail">
-        <div className="flow__rail-fill" />
-        <div className="flow__rail-flow" />
-      </div>
-      <div className="flow__steps" style={{ '--n': steps.length }}>
-        {steps.map(([no, label, sub], i) => (
-          <div className="flow__step" key={no}>
-            <span
-              className={`flow__node${i === steps.length - 1 ? ' flow__node--paid' : ''}`}
-            >
-              {no}
-            </span>
-            <span className="flow__text">
-              <b className="flow__label">{label}</b>
-              {sub && <em className="flow__sub">{sub}</em>}
-            </span>
-          </div>
-        ))}
       </div>
     </div>
   )
@@ -601,9 +536,9 @@ function Experience() {
         Your Windows agent.{' '}
         <span className="grad">Always one call away</span>.
       </h2>
-      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.6vh, 30px)', maxWidth: '62ch' }}>
+      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.6vh, 30px)', maxWidth: '66ch' }}>
         Most AI assistants wait inside another window. AYO stays available across
-        Windows.
+        Windows and operates it directly, with no per app integration.
       </p>
 
       <div className="modes r" ref={ref}>
@@ -631,51 +566,85 @@ function Experience() {
 }
 
 /* =========================================================
-   05 How it works
+   05 Trust and control
    ========================================================= */
-const PIPELINE = [
-  ['1', 'Ask', 'Voice or text, from anywhere'],
-  ['2', 'Understand', 'The relevant screen context'],
-  ['3', 'Plan', 'The steps to finish the task'],
-  ['4', 'Operate', 'Windows, click by click'],
+const GUARANTEES = [
+  [
+    'Private by design',
+    'Relevant screen context is processed only when needed, not continuously recorded.',
+    'Memory and preferences stay local whenever possible.',
+    'var(--cyan)',
+  ],
+  [
+    'Permissioned actions',
+    'AYO operates only within the access and permissions the user gives it.',
+    'Sending, sharing, deleting or purchasing always require approval.',
+    'var(--violet)',
+  ],
+  [
+    'Deterministic safety',
+    'Safety rules are enforced in code, not left to the model’s judgement.',
+    'Sensitive, forbidden or out of scope actions are blocked.',
+    'var(--magenta)',
+  ],
 ]
-const RULES = [
-  ['Runs freely', 'Reading the screen, opening apps, drafting', 'var(--cyan)'],
-  ['Asks first', 'Sending, paying, deleting, sharing', 'var(--violet)'],
-  ['Never runs', 'Credentials, banking, anything out of scope', 'var(--magenta)'],
+const CHAIN = [
+  ['The model', 'proposes', false],
+  ['AYO’s safety layer', 'decides', true],
+  ['The user stays', 'in control', false],
 ]
-function HowItWorks() {
+function SafetyChain() {
+  const ref = useRef(null)
+
+  useGSAP(
+    () => {
+      const steps = gsap.utils.toArray(ref.current.querySelectorAll('.chain__step'))
+      const arrows = gsap.utils.toArray(ref.current.querySelectorAll('.chain__arrow'))
+      if (reduced()) return
+      gsap
+        .timeline({ delay: 0.2 })
+        .from(steps, { opacity: 0, y: 12, duration: 0.4, ease: 'power3.out', stagger: 0.16 })
+        .from(arrows, { opacity: 0, duration: 0.3, stagger: 0.16 }, '-=0.5')
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div className="chain" ref={ref}>
+      {CHAIN.map(([label, verb, core], i) => (
+        <Fragment key={verb}>
+          {i > 0 && <span className="chain__arrow" />}
+          <span className={`chain__step${core ? ' chain__step--core' : ''}`}>
+            {label} <b>{verb}</b>
+          </span>
+        </Fragment>
+      ))}
+    </div>
+  )
+}
+function TrustControl() {
   return (
     <Slide>
-      <Head id="how" title="How It Works" />
-      <h2 className="headline r" style={{ maxWidth: '22ch', marginBottom: '6px' }}>
-        From a spoken request to a{' '}
-        <span className="grad">finished task</span>.
+      <Head id="trust" title="Trust and Control" />
+      <h2 className="headline r" style={{ maxWidth: '24ch', marginBottom: '6px' }}>
+        AYO can act. <span className="grad">You stay in control</span>.
       </h2>
-      <p className="lead r" style={{ maxWidth: '68ch' }}>
-        One execution layer operates Windows itself, so a workflow needs no
-        integration. Even software with no API.
+      <p className="lead r" style={{ marginBottom: 'clamp(14px, 2.6vh, 30px)', maxWidth: '62ch' }}>
+        Privacy, permissions and safety are built into every action.
       </p>
 
-      <FlowRail steps={PIPELINE} />
+      <div className="rules r">
+        {GUARANTEES.map(([tag, lead, sub, tone]) => (
+          <div className="rule" key={tag} style={{ '--tone': tone }}>
+            <span className="rule__tag">{tag}</span>
+            <p className="rule__lead">{lead}</p>
+            <p className="rule__sub">{sub}</p>
+          </div>
+        ))}
+      </div>
 
-      <div className="gate r">
-        <div className="gate__head">
-          <span className="gate__tag">Every action passes through here</span>
-          <span className="gate__title">Deterministic permissions and safety rules</span>
-        </div>
-        <div className="rules">
-          {RULES.map(([name, what, tone]) => (
-            <div className="rule" key={name} style={{ '--tone': tone }}>
-              <b>{name}</b>
-              <span>{what}</span>
-            </div>
-          ))}
-        </div>
-        <p className="gate__foot">
-          Fixed rules in code, not a model judgement call. The user stays in
-          control.
-        </p>
+      <div className="r" style={{ marginTop: 'clamp(16px, 3vh, 32px)' }}>
+        <SafetyChain />
       </div>
 
       <Bridge>Not a concept. The MVP is already in users hands.</Bridge>
@@ -1301,7 +1270,7 @@ export const SLIDES = [
   { id: 'gap', title: 'The Gap', Component: Gap },
   { id: 'friction', title: 'Why It Is Hard', Component: Friction },
   { id: 'experience', title: 'Product Experience', Component: Experience },
-  { id: 'how', title: 'How It Works', Component: HowItWorks },
+  { id: 'trust', title: 'Trust and Control', Component: TrustControl },
   { id: 'traction', title: 'Early Demand', Component: Traction },
   { id: 'model', title: 'Business Model', Component: BusinessModel },
   { id: 'moat', title: 'Why It Is Hard to Replace', Component: Moat },
