@@ -158,7 +158,7 @@ export default function App() {
   }, [go, scrollBlocksNav])
 
   const Active = SLIDES[index].Component
-  const isHero = index === 0 || index === TOTAL - 1
+  const isHero = index === TOTAL - 1
   const progress = (index + 1) / TOTAL
 
   return (
