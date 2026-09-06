@@ -15,9 +15,9 @@ import qaisPhoto from './assets/QaisHs.png'
    file; adding one back means putting its id here and its entry in SLIDES. */
 const ORDER = [
   'opportunity',
-  'competition',
   'experience',
   'video',
+  'competition',
   'traction',
   'model',
   'gtm',
@@ -405,44 +405,27 @@ function Experience() {
 /* =========================================================
    04 See it work
    ========================================================= */
+const DEMO_VIDEO_ID = '9dawdtLNEYI'
 function SeeItWork() {
-  const ref = useRef(null)
-
-  useGSAP(
-    () => {
-      if (reduced()) return
-      gsap.to(ref.current.querySelectorAll('.film__ring'), {
-        scale: 1.9,
-        opacity: 0,
-        duration: 2.1,
-        ease: 'power2.out',
-        repeat: -1,
-      })
-    },
-    { scope: ref },
-  )
-
   return (
     <Slide>
       <Head id="video" title="See It Work" />
-      <div className="film r" ref={ref}>
-        {/* Swap the placeholder for the real cut when the file lands:
-            import demo from './assets/demo.mp4'
-            <video className="film__video" src={demo} controls playsInline /> */}
+      <div className="film r">
         <div className="film__frame">
           <div className="film__bar">
             <i />
             <i />
             <i />
-            <span className="film__file">ayo-demo.mp4</span>
+            <span className="film__file">ayo-demo · youtube</span>
           </div>
-          <div className="film__stage">
-            <span className="film__play" aria-hidden="true">
-              <span className="film__ring" />
-            </span>
-            <span className="film__label">Product demo</span>
-            <span className="film__hint">Live walkthrough plays here</span>
-          </div>
+          <iframe
+            className="film__video"
+            src={`https://www.youtube-nocookie.com/embed/${DEMO_VIDEO_ID}?rel=0&modestbranding=1`}
+            title="AYO product demo"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+          />
         </div>
       </div>
     </Slide>
@@ -765,8 +748,7 @@ const FOUNDERS = [
     photo: omarPhoto,
     name: 'Omar Jaber',
     role: 'Cofounder & CEO',
-      wins: [
-      ['14', 'First business', '$3,000+ in revenue from a digital gaming business.'],
+    wins: [
       [
         '16',
         'Apps, games and an audience',
@@ -776,6 +758,11 @@ const FOUNDERS = [
         'University',
         'National recognition',
         'An AI platform for Tawjihi graduates. TV interview and recognition from the President.',
+      ],
+      [
+        'Runs',
+        'Vision, fundraising and product',
+        'Sets the product direction, leads fundraising and owns the roadmap.',
       ],
     ],
   },
@@ -788,6 +775,11 @@ const FOUNDERS = [
         'Built',
         'A printing business, scaled',
         'Took a t-shirt printing business from 200 to 20,000 ILS in under a year.',
+      ],
+      [
+        'Built',
+        'Discord bots, sold',
+        'Built and sold Discord bots to medium-sized public Discord servers.',
       ],
       ['Runs', 'Operations and finance', 'Pricing, unit economics and day to day execution.'],
     ],
@@ -803,6 +795,11 @@ const FOUNDERS = [
         'Designed and shipped a platform for reserving football fields, end to end.',
       ],
       [
+        'Freelance',
+        'POS systems, sold',
+        'Built and sold point-of-sale systems to supermarkets and small businesses.',
+      ],
+      [
         'Runs',
         'Architecture and engineering',
         'The agent runtime, the safety layer and desktop control.',
@@ -816,7 +813,7 @@ const CREW = [
 ]
 const ADVISORS = [
   ['Mohammad Nobani, CEO of Middleframe', 'Strategic product and company building guidance'],
-  ['Orange Corners', 'Continued mentorship with Mo Salah'],
+  ['Orange Corners', 'Accelerator program, ongoing mentorship'],
 ]
 function Team() {
   return (
@@ -1056,9 +1053,9 @@ function Closing() {
 
 export const SLIDES = [
   { id: 'opportunity', title: 'The Opportunity', Component: Opportunity },
-  { id: 'competition', title: 'Competition', Component: Competition },
   { id: 'experience', title: 'Product Experience', Component: Experience },
   { id: 'video', title: 'See It Work', Component: SeeItWork },
+  { id: 'competition', title: 'Competition', Component: Competition },
   { id: 'traction', title: 'Early Demand', Component: Traction },
   { id: 'model', title: 'Business Model', Component: BusinessModel },
   { id: 'gtm', title: 'Go To Market', Component: GoToMarket },

@@ -2071,66 +2071,13 @@ h1.display {
   text-transform: uppercase;
   color: var(--faint);
 }
-/* the real cut drops straight in here at the same aspect ratio */
+/* the embedded demo (YouTube iframe) sits under the window chrome at 16:9 */
 .film__video {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
+  border: 0;
   background: var(--ink);
-}
-.film__stage {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(
-    150deg,
-    rgba(109, 75, 255, 0.08),
-    rgba(47, 107, 255, 0.05) 45%,
-    rgba(225, 64, 154, 0.07)
-  );
-}
-.film__play {
-  position: relative;
-  width: clamp(54px, 5vw, 78px);
-  height: clamp(54px, 5vw, 78px);
-  border-radius: 50%;
-  background: var(--nebula);
-  box-shadow: 0 20px 46px -14px rgba(109, 75, 255, 0.75);
-}
-.film__play::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 54%;
-  transform: translate(-50%, -50%);
-  border-left: clamp(15px, 1.4vw, 21px) solid #fff;
-  border-top: clamp(10px, 0.95vw, 14px) solid transparent;
-  border-bottom: clamp(10px, 0.95vw, 14px) solid transparent;
-}
-.film__ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px solid rgba(109, 75, 255, 0.5);
-  will-change: transform, opacity;
-}
-.film__label {
-  margin-top: 8px;
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: clamp(16px, 1.5vw, 23px);
-  letter-spacing: -0.015em;
-}
-.film__hint {
-  font-family: var(--mono);
-  font-size: clamp(10px, 0.85vw, 12px);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 /* ---- Stat strip, compact setting for use inside a panel ---- */
