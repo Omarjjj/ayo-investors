@@ -743,73 +743,37 @@ function GoToMarket() {
 /* =========================================================
    08 Team
    ========================================================= */
-const FOUNDERS = [
+const TEAM = [
   {
     photo: omarPhoto,
     name: 'Omar Jaber',
     role: 'Cofounder & CEO',
-    wins: [
-      [
-        '16',
-        'Apps, games and an audience',
-        '17K+ YouTube subscribers, 100K views, and a game watched by 2M+ and downloaded 10K+ times.',
-      ],
-      [
-        'University',
-        'National recognition',
-        'An AI platform for Tawjihi graduates. TV interview and recognition from the President.',
-      ],
-      [
-        'Runs',
-        'Vision, fundraising and product',
-        'Sets the product direction, leads fundraising and owns the roadmap.',
-      ],
-    ],
+    bio: 'Built 16 apps and games, grew a YouTube audience to 17K+ subscribers, and launched a game seen by 2M+. Leads AYO’s vision, fundraising, and product roadmap.',
   },
   {
     photo: aymanPhoto,
     name: 'Ayman Arafat',
     role: 'Cofounder & COO',
-    wins: [
-      [
-        'Built',
-        'A printing business, scaled',
-        'Took a t-shirt printing business from 200 to 20,000 ILS in under a year.',
-      ],
-      [
-        'Built',
-        'Discord bots, sold',
-        'Built and sold Discord bots to medium-sized public Discord servers.',
-      ],
-      ['Runs', 'Operations and finance', 'Pricing, unit economics and day to day execution.'],
-    ],
+    bio: 'Scaled a T-shirt printing business from 200 to 20,000 ILS in under a year and sold Discord bots. Leads AYO’s operations, finance, and day-to-day execution.',
   },
   {
     photo: yazanPhoto,
     name: 'Yazan Aydi',
     role: 'Cofounder & CTO',
-    wins: [
-      [
-        'Built',
-        'A live booking platform',
-        'Designed and shipped a platform for reserving football fields, end to end.',
-      ],
-      [
-        'Freelance',
-        'POS systems, sold',
-        'Built and sold point-of-sale systems to supermarkets and small businesses.',
-      ],
-      [
-        'Runs',
-        'Architecture and engineering',
-        'The agent runtime, the safety layer and desktop control.',
-      ],
-    ],
+    bio: 'Built a live football-field booking platform and sold point-of-sale systems to local businesses. Leads AYO’s architecture, agent runtime, safety layer, and desktop control.',
   },
-]
-const CREW = [
-  [qusayPhoto, 'Qusay', 'Product engineering'],
-  [qaisPhoto, 'Qais', 'Growth'],
+  {
+    photo: qusayPhoto,
+    name: 'Qusay',
+    role: 'Product Engineer',
+    bio: 'Built real-time analytics databases for local pharmacies and developed his own Linux agent. Owns AYO’s product development and turns the roadmap into reliable releases.',
+  },
+  {
+    photo: qaisPhoto,
+    name: 'Qais',
+    role: 'Head of Marketing',
+    bio: 'Led marketing for a T-shirt printing business and managed product data and records for an e-commerce platform. Leads AYO’s growth strategy and customer acquisition.',
+  },
 ]
 const ADVISORS = [
   ['Mohammad Nobani, CEO of Middleframe', 'Strategic product and company building guidance'],
@@ -823,57 +787,29 @@ function Team() {
         className="headline r"
         style={{ maxWidth: '38ch', marginBottom: 'clamp(10px, 1.8vh, 20px)' }}
       >
-        Founders who were <span className="grad">already shipping</span> before
-        this.
+        A team that was <span className="grad">already building</span> before
+        AYO.
       </h2>
 
-      <div className="founders r">
-        {FOUNDERS.map(({ photo, name, role, wins }) => (
-          <div className="founder" key={name}>
-            <div className="founder__head">
-              <img className="founder__photo" src={photo} alt={name} loading="lazy" />
-              <div className="founder__id">
-                <span className="founder__name">{name}</span>
-                <span className="founder__role">{role}</span>
-              </div>
-            </div>
-            <div className="founder__wins">
-              {wins.map(([when, title, desc]) => (
-                <div className="founder__win" key={title}>
-                  <span className="founder__when">{when}</span>
-                  <span className="founder__what">{title}</span>
-                  <span className="founder__desc">{desc}</span>
-                </div>
-              ))}
-            </div>
+      <div className="people r">
+        {TEAM.map(({ photo, name, role, bio }) => (
+          <div className="person" key={name}>
+            <img className="person__photo" src={photo} alt={name} loading="lazy" />
+            <span className="person__name">{name}</span>
+            <span className="person__role">{role}</span>
+            <p className="person__what">{bio}</p>
           </div>
         ))}
+      </div>
 
-        {/* the supporting pair and the advisors ride in the same row, which is
-            what keeps this slide off `useFit`'s downscale */}
-        <div className="founder founder--aside">
-          <div className="crew">
-            {CREW.map(([photo, name, role]) => (
-              <div className="crew__item" key={name}>
-                <img className="crew__photo" src={photo} alt={name} loading="lazy" />
-                <span className="crew__id">
-                  <span className="crew__name">{name}</span>
-                  <span className="crew__role">{role}</span>
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="pairs pairs--tight">
-            <span className="pairs__tag">Guidance</span>
-            {ADVISORS.map(([name, what]) => (
-              <div className="pairs__row" key={name}>
-                <b>{name}</b>
-                <span>{what}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="team-guidance r">
+        <span className="pairs__tag">Guidance</span>
+        {ADVISORS.map(([name, what]) => (
+          <span className="team-guidance__item" key={name}>
+            <b>{name}</b>
+            <span>{what}</span>
+          </span>
+        ))}
       </div>
     </Slide>
   )

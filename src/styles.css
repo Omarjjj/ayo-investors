@@ -1808,6 +1808,16 @@ h1.display {
   flex-direction: column;
   gap: 10px;
 }
+.person__photo {
+  width: clamp(58px, 5vw, 82px);
+  height: clamp(58px, 5vw, 82px);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  background: var(--paper);
+  box-shadow: 0 12px 28px -14px rgba(20, 20, 60, 0.6);
+  margin-bottom: 4px;
+}
 .person__av {
   width: clamp(42px, 3.6vw, 56px);
   height: clamp(42px, 3.6vw, 56px);
@@ -1836,11 +1846,38 @@ h1.display {
   letter-spacing: 0.06em;
   color: var(--violet);
   line-height: 1.45;
+  min-height: 2.9em;
 }
 .person__what {
   font-size: clamp(12px, 0.9vw, 14px);
   line-height: 1.45;
   color: var(--muted);
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.team-guidance {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(16px, 2vw, 30px);
+  margin-top: clamp(12px, 2vh, 22px);
+  padding-top: 2px;
+  border-top: 1px solid var(--line);
+}
+.team-guidance .pairs__tag {
+  flex: none;
+}
+.team-guidance__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: clamp(11.5px, 0.88vw, 13.5px);
+  line-height: 1.4;
+  color: var(--muted);
+}
+.team-guidance__item b {
+  font-family: var(--display);
+  font-weight: 600;
+  color: var(--ink);
 }
 
 /* ---- The round ---- */
@@ -2425,6 +2462,11 @@ h1.display {
   .founders,
   .ask {
     grid-template-columns: 1fr;
+  }
+  .team-guidance {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
   .film {
     max-width: none;
