@@ -485,7 +485,10 @@ function Friction() {
         </div>
       </div>
 
-      <Bridge>So we built a different kind of assistant.</Bridge>
+      <Bridge>
+        So how does one assistant operate everything without integrating with
+        anything?
+      </Bridge>
     </Slide>
   )
 }
@@ -620,8 +623,8 @@ function Experience() {
       </p>
 
       <Bridge>
-        So how does one assistant operate everything without integrating with
-        anything?
+        But if AYO can see the screen and operate the whole PC, how does the user
+        stay in control?
       </Bridge>
     </Slide>
   )
@@ -765,10 +768,37 @@ function Traction() {
 /* =========================================================
    07 Business model
    ========================================================= */
+/* Credits and margins are the exact lines from the unit economics model. */
 const TIERS = [
-  ['Free', '$0', '/ month', 'Try AYO every day'],
-  ['Plus', '$14.99', '/ month', 'The primary paid plan'],
-  ['Pro', '$30', '/ month', 'Heavy, all day use'],
+  {
+    name: 'Free',
+    price: '$0',
+    desc: 'Try AYO every day',
+    credits: '600',
+    creditNote: '20 credits per day',
+    margin: '-$0.47',
+    marginLabel: 'Margin / user',
+    cost: true,
+  },
+  {
+    name: 'Plus',
+    price: '$14.99',
+    desc: 'The primary paid plan',
+    credits: '5,000',
+    creditNote: 'Credits per month',
+    margin: '74.7%',
+    marginLabel: 'Gross margin',
+    accent: true,
+  },
+  {
+    name: 'Pro',
+    price: '$30',
+    desc: 'Heavy, all day use',
+    credits: '16,000',
+    creditNote: 'Credits per month',
+    margin: '64.5%',
+    marginLabel: 'Gross margin',
+  },
 ]
 const PHASES = [
   [
@@ -805,12 +835,26 @@ function BusinessModel() {
       </p>
 
       <div className="tiers r" style={{ '--n': TIERS.length }}>
-        {TIERS.map(([name, price, per, desc]) => (
-          <div className={`tier${name === 'Plus' ? ' tier--accent' : ''}`} key={name}>
-            <span className="tier__name">{name}</span>
-            <span className="tier__price">{price}</span>
-            <span className="tier__per">{per}</span>
-            <span className="tier__desc">{desc}</span>
+        {TIERS.map((t) => (
+          <div className={`tier${t.accent ? ' tier--accent' : ''}`} key={t.name}>
+            <span className="tier__name">{t.name}</span>
+            <span className="tier__price">{t.price}</span>
+            <span className="tier__per">/ month</span>
+            <span className="tier__desc">{t.desc}</span>
+            <div className="tier__meta">
+              <div className="tier__metric">
+                <span>{t.creditNote}</span>
+                <b>{t.credits}</b>
+              </div>
+              <div
+                className={`tier__metric tier__metric--margin${
+                  t.cost ? ' tier__metric--cost' : ''
+                }`}
+              >
+                <span>{t.marginLabel}</span>
+                <b>{t.margin}</b>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -833,6 +877,11 @@ function BusinessModel() {
       </div>
 
       <Bridge>So what makes AYO hard to replace?</Bridge>
+
+      <p className="note r" style={{ marginTop: '10px' }}>
+        Margins are net of API cost after cache savings, support, infrastructure,
+        onboarding and payment fees. Source: AYO unit economics model.
+      </p>
     </Slide>
   )
 }

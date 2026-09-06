@@ -1637,6 +1637,48 @@ h1.display {
   line-height: 1.45;
 }
 
+/* credits and margin, straight from the unit economics model */
+.tier__meta {
+  margin-top: auto;
+  padding-top: clamp(11px, 1.5vh, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+}
+.tier--accent .tier__meta {
+  border-top-color: rgba(109, 75, 255, 0.22);
+}
+.tier__metric {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tier__metric span {
+  font-family: var(--mono);
+  font-size: clamp(9px, 0.78vw, 10.5px);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.tier__metric b {
+  flex: none;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(15px, 1.4vw, 21px);
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+.tier__metric--margin b {
+  color: var(--violet);
+}
+/* the free tier is an acquisition cost, not a margin */
+.tier__metric--cost b {
+  color: var(--faint);
+}
+
 /* ---- Validation capital stack ---- */
 .capital {
   display: flex;
