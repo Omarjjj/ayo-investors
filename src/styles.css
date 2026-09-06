@@ -28,13 +28,13 @@
   --mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Layout */
-  --pad-x: clamp(28px, 6vw, 130px);
-  --pad-y: clamp(26px, 5vh, 70px);
+  --pad-x: clamp(28px, 5vw, 104px);
+  --pad-y: clamp(20px, 3.6vh, 52px);
   --maxw: 1500px;
   --chrome-clear: 72px;
   --chrome-row-h: 22px;
   /* vertical room reserved for the fixed brand/counter row at the top */
-  --head-top: calc(var(--pad-y) + 56px);
+  --head-top: calc(var(--pad-y) + 42px);
   /* horizontal room reserved for the fixed bottom-left slide label */
   --chrome-bl-clear: clamp(170px, 20vw, 270px);
 
@@ -164,7 +164,7 @@ a {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: var(--head-top) var(--pad-x) calc(var(--pad-y) + 44px);
+  padding: var(--head-top) var(--pad-x) calc(var(--pad-y) + 32px);
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -382,26 +382,30 @@ h1.display {
   font-weight: 700;
 }
 
+/* Content slides live or die on how much room is left under the headline.
+   A 68px headline forced `useFit` to shrink the whole slide, which shrank
+   the data with it, so the display scale is deliberately restrained here
+   and the hero slides opt back up via `.display`. */
 .headline {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(30px, 4.4vw, 68px);
-  line-height: 1.02;
+  font-size: clamp(26px, 3.3vw, 48px);
+  line-height: 1.05;
   letter-spacing: -0.022em;
 }
 
 .statement {
   font-family: var(--display);
   font-weight: 500;
-  font-size: clamp(24px, 3vw, 46px);
-  line-height: 1.1;
+  font-size: clamp(20px, 2.3vw, 34px);
+  line-height: 1.15;
   letter-spacing: -0.018em;
   max-width: 20ch;
 }
 
 .lead {
-  font-size: clamp(16px, 1.35vw, 21px);
-  line-height: 1.55;
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.5;
   color: var(--ink-soft);
   max-width: 46ch;
   font-weight: 400;
@@ -446,8 +450,8 @@ h1.display {
   align-items: baseline;
   gap: 18px;
   flex-shrink: 0;
-  margin-bottom: clamp(18px, 3vh, 36px);
-  padding-top: 4px;
+  margin-bottom: clamp(10px, 1.8vh, 20px);
+  padding-top: 2px;
 }
 .slide-head .section-no {
   display: none;
@@ -592,7 +596,7 @@ h1.display {
 .stat__num {
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(42px, 5.8vw, 88px);
+  font-size: clamp(36px, 4.4vw, 66px);
   line-height: 0.9;
   letter-spacing: -0.04em;
 }
@@ -1026,10 +1030,10 @@ h1.display {
   display: flex;
   align-items: baseline;
   gap: 16px;
-  margin-top: clamp(16px, 3vh, 34px);
+  margin-top: clamp(10px, 1.7vh, 20px);
   font-family: var(--display);
   font-weight: 500;
-  font-size: clamp(15px, 1.4vw, 22px);
+  font-size: clamp(15px, 1.3vw, 20px);
   line-height: 1.3;
   letter-spacing: -0.015em;
   color: var(--ink-soft);
@@ -1054,8 +1058,8 @@ h1.display {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: clamp(18px, 2vw, 30px);
+  gap: 12px;
+  padding: clamp(14px, 1.6vw, 24px);
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--paper-pure);
@@ -1513,15 +1517,15 @@ h1.display {
 }
 .stat-strip__item {
   background: var(--paper-pure);
-  padding: clamp(16px, 2vh, 26px) clamp(14px, 1.4vw, 24px);
+  padding: clamp(12px, 1.5vh, 19px) clamp(13px, 1.3vw, 21px);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 .stat-strip__item b {
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(28px, 3.4vw, 54px);
+  font-size: clamp(24px, 2.8vw, 42px);
   letter-spacing: -0.035em;
   line-height: 1;
 }
@@ -1546,7 +1550,7 @@ h1.display {
 }
 .tier {
   background: var(--paper-pure);
-  padding: clamp(16px, 1.8vw, 28px) clamp(14px, 1.3vw, 22px);
+  padding: clamp(13px, 1.4vw, 22px) clamp(12px, 1.2vw, 19px);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1761,10 +1765,10 @@ h1.display {
 }
 .phase {
   background: var(--paper-pure);
-  padding: clamp(18px, 1.9vw, 30px);
+  padding: clamp(14px, 1.5vw, 23px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 .phase--now {
   background: linear-gradient(180deg, rgba(109, 75, 255, 0.07), rgba(255, 255, 255, 0.9));
@@ -1782,7 +1786,7 @@ h1.display {
 .phase__name {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(20px, 2.2vw, 34px);
+  font-size: clamp(17px, 1.8vw, 26px);
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -1951,6 +1955,22 @@ h1.display {
   font-size: clamp(14px, 1.15vw, 18px);
   color: var(--ink-soft);
 }
+/* advisors in a narrow column: stack the label over its description */
+.pairs--tight .pairs__row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: clamp(8px, 1.1vh, 13px) 0;
+}
+.pairs--tight .pairs__row b {
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.2;
+}
+.pairs--tight .pairs__row span {
+  text-align: left;
+  font-size: clamp(11.5px, 0.85vw, 13.5px);
+  line-height: 1.4;
+}
 
 /* ---- Competition matrix additions ---- */
 /* partly, or only inside its own window */
@@ -2014,7 +2034,9 @@ h1.display {
    downscaling the slide, which is what shrinks it away from the edges. */
 .film {
   width: 100%;
-  max-width: min(100%, calc((100vh - 250px) * 16 / 9));
+  /* Sized off the height left after the deck chrome and the headline, so the
+     frame is as large as it can be without tripping `useFit`'s downscale. */
+  max-width: min(100%, calc((100vh - 2 * var(--pad-y) - 226px) * 16 / 9));
   margin: 0 auto;
 }
 .film__frame {
@@ -2127,7 +2149,7 @@ h1.display {
 /* ---- Team: founder cards with the receipts ---- */
 .founders {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr) 0.82fr;
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
@@ -2136,9 +2158,14 @@ h1.display {
 }
 .founder {
   background: var(--paper-pure);
-  padding: clamp(16px, 1.7vw, 28px);
+  padding: clamp(13px, 1.4vw, 22px);
   display: flex;
   flex-direction: column;
+  gap: clamp(10px, 1.4vh, 16px);
+  min-width: 0;
+}
+.founder--aside {
+  background: var(--paper);
   gap: clamp(12px, 1.8vh, 20px);
 }
 /* the CEO card carries the most history, so it gets the accent */
@@ -2184,8 +2211,8 @@ h1.display {
 .founder__wins {
   display: flex;
   flex-direction: column;
-  gap: clamp(9px, 1.3vh, 15px);
-  padding-top: clamp(10px, 1.4vh, 16px);
+  gap: clamp(7px, 1vh, 12px);
+  padding-top: clamp(8px, 1.1vh, 13px);
   border-top: 1px solid var(--line);
 }
 .founder__win {
@@ -2218,14 +2245,53 @@ h1.display {
   line-height: 1.5;
   color: var(--muted);
 }
-/* the crew row reuses the same circle the initials used */
-.person__av--img {
-  display: block;
-  padding: 0;
+/* the supporting pair, kept to one compact line each so the founder cards
+   keep the vertical room they need */
+.crew {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.crew__item {
+  background: var(--paper-pure);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: clamp(9px, 1vw, 14px) clamp(11px, 1.2vw, 17px);
+}
+.crew__photo {
+  flex: none;
+  width: clamp(38px, 3.3vw, 52px);
+  height: clamp(38px, 3.3vw, 52px);
+  border-radius: 50%;
   object-fit: cover;
   object-position: 50% 20%;
   background: var(--paper);
-  box-shadow: 0 12px 28px -14px rgba(20, 20, 60, 0.6);
+  box-shadow: 0 10px 22px -12px rgba(20, 20, 60, 0.55);
+}
+.crew__id {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.crew__name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(14px, 1.2vw, 19px);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+.crew__role {
+  font-family: var(--mono);
+  font-size: clamp(9px, 0.78vw, 11px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--violet);
 }
 
 /* ---- The ask: full ticket beside the smaller first step ---- */
@@ -2241,8 +2307,8 @@ h1.display {
 .ask__panel {
   display: flex;
   flex-direction: column;
-  gap: clamp(9px, 1.3vh, 15px);
-  padding: clamp(18px, 2vw, 32px);
+  gap: clamp(7px, 1vh, 12px);
+  padding: clamp(14px, 1.6vw, 25px);
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--paper-pure);
@@ -2283,12 +2349,12 @@ h1.display {
 .ask__figure b {
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(34px, 3.8vw, 60px);
+  font-size: clamp(30px, 3.1vw, 48px);
   letter-spacing: -0.042em;
   line-height: 0.95;
 }
 .ask__panel--full .ask__figure b {
-  font-size: clamp(46px, 5.6vw, 92px);
+  font-size: clamp(40px, 4.4vw, 70px);
 }
 .ask__figure span {
   font-family: var(--mono);
@@ -2311,7 +2377,7 @@ h1.display {
 
 /* the same five months, without the connecting rail */
 .tl--chips {
-  margin: clamp(16px, 2.6vh, 30px) 0 0;
+  margin: clamp(11px, 1.8vh, 20px) 0 0;
 }
 .tl--chips .tl__col {
   gap: 7px;

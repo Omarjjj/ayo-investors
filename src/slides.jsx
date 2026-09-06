@@ -373,7 +373,7 @@ function Experience() {
       </h2>
       <p
         className="lead r"
-        style={{ marginBottom: 'clamp(14px, 2.6vh, 30px)', maxWidth: '66ch' }}
+        style={{ marginBottom: 'clamp(12px, 2vh, 24px)', maxWidth: '94ch' }}
       >
         Most AI assistants wait inside another window. AYO stays available across
         everything you already use and operates it directly, with no per app
@@ -425,13 +425,6 @@ function SeeItWork() {
   return (
     <Slide>
       <Head id="video" title="See It Work" />
-      <h2
-        className="headline r"
-        style={{ maxWidth: '32ch', marginBottom: 'clamp(12px, 2vh, 22px)' }}
-      >
-        Ninety seconds of AYO <span className="grad">doing real work</span>.
-      </h2>
-
       <div className="film r" ref={ref}>
         {/* Swap the placeholder for the real cut when the file lands:
             import demo from './assets/demo.mp4'
@@ -518,7 +511,7 @@ function Traction() {
       </h2>
       <p
         className="lead r"
-        style={{ marginBottom: 'clamp(14px, 2.6vh, 30px)', maxWidth: '66ch' }}
+        style={{ marginBottom: 'clamp(12px, 2vh, 24px)', maxWidth: '94ch' }}
       >
         A small test launch, no paid acquisition, and the reach is still
         compounding week over week.
@@ -623,7 +616,7 @@ function BusinessModel() {
       </h2>
       <p
         className="lead r"
-        style={{ marginBottom: 'clamp(14px, 2.4vh, 26px)', maxWidth: '66ch' }}
+        style={{ marginBottom: 'clamp(12px, 2vh, 24px)', maxWidth: '94ch' }}
       >
         Win the individual user first. That is where habit and pricing power are
         created.
@@ -772,17 +765,17 @@ const FOUNDERS = [
     photo: omarPhoto,
     name: 'Omar Jaber',
     role: 'Cofounder & CEO',
-    wins: [
-      ['14', 'First business', 'A digital gaming business that generated more than $3,000 in revenue.'],
+      wins: [
+      ['14', 'First business', '$3,000+ in revenue from a digital gaming business.'],
       [
         '16',
         'Apps, games and an audience',
-        '17,000+ YouTube subscribers and 100,000 views. An AbuRob game watched by 2M+ people and downloaded 10,000+ times.',
+        '17K+ YouTube subscribers, 100K views, and a game watched by 2M+ and downloaded 10K+ times.',
       ],
       [
         'University',
         'National recognition',
-        'An AI platform that helped Tawjihi graduates choose a university. TV interview, university spotlight, and recognition from the President of the country.',
+        'An AI platform for Tawjihi graduates. TV interview and recognition from the President.',
       ],
     ],
   },
@@ -818,8 +811,8 @@ const FOUNDERS = [
   },
 ]
 const CREW = [
-  [qusayPhoto, 'Qusay', 'Product engineering', 'Builds the product surface'],
-  [qaisPhoto, 'Qais', 'Growth', 'Acquisition and content'],
+  [qusayPhoto, 'Qusay', 'Product engineering'],
+  [qaisPhoto, 'Qais', 'Growth'],
 ]
 const ADVISORS = [
   ['Mohammad Nobani, CEO of Middleframe', 'Strategic product and company building guidance'],
@@ -831,7 +824,7 @@ function Team() {
       <Head id="team" title="Team" />
       <h2
         className="headline r"
-        style={{ maxWidth: '38ch', marginBottom: 'clamp(14px, 2.4vh, 28px)' }}
+        style={{ maxWidth: '38ch', marginBottom: 'clamp(10px, 1.8vh, 20px)' }}
       >
         Founders who were <span className="grad">already shipping</span> before
         this.
@@ -858,35 +851,31 @@ function Team() {
             </div>
           </div>
         ))}
-      </div>
 
-      <div
-        className="cols-2"
-        style={{
-          gap: 'clamp(20px, 3vw, 48px)',
-          alignItems: 'start',
-          marginTop: 'clamp(14px, 2.6vh, 28px)',
-        }}
-      >
-        <div className="people r" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-          {CREW.map(([photo, name, role, what]) => (
-            <div className="person" key={name}>
-              <img className="person__av person__av--img" src={photo} alt={name} loading="lazy" />
-              <span className="person__name">{name}</span>
-              <span className="person__role">{role}</span>
-              <span className="person__what">{what}</span>
-            </div>
-          ))}
-        </div>
+        {/* the supporting pair and the advisors ride in the same row, which is
+            what keeps this slide off `useFit`'s downscale */}
+        <div className="founder founder--aside">
+          <div className="crew">
+            {CREW.map(([photo, name, role]) => (
+              <div className="crew__item" key={name}>
+                <img className="crew__photo" src={photo} alt={name} loading="lazy" />
+                <span className="crew__id">
+                  <span className="crew__name">{name}</span>
+                  <span className="crew__role">{role}</span>
+                </span>
+              </div>
+            ))}
+          </div>
 
-        <div className="pairs r">
-          <span className="pairs__tag">Guidance</span>
-          {ADVISORS.map(([name, what]) => (
-            <div className="pairs__row" key={name}>
-              <b>{name}</b>
-              <span>{what}</span>
-            </div>
-          ))}
+          <div className="pairs pairs--tight">
+            <span className="pairs__tag">Guidance</span>
+            {ADVISORS.map(([name, what]) => (
+              <div className="pairs__row" key={name}>
+                <b>{name}</b>
+                <span>{what}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Slide>
@@ -960,7 +949,7 @@ function TheAsk() {
       </h2>
       <p
         className="lead r"
-        style={{ marginBottom: 'clamp(14px, 2.4vh, 26px)', maxWidth: '72ch' }}
+        style={{ marginBottom: 'clamp(12px, 2vh, 24px)', maxWidth: '104ch' }}
       >
         We are raising a $500K pre-seed to cover the next 18 months and scale
         quickly. For investors not ready for a full ticket, we built a $75K,
