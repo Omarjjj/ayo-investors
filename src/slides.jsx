@@ -155,13 +155,13 @@ const RIVAL_CAPS = [
   'No per app setup',
   'Always reachable',
   'Approval built in',
-  'Arabic native',
+  'Proactive',
 ]
 const RIVALS = [
-  ['ChatGPT desktop', ['no', 'yes', 'no', 'no', 'part']],
-  ['Microsoft Copilot', ['part', 'no', 'part', 'part', 'part']],
-  ['Claude computer use', ['part', 'yes', 'no', 'part', 'part']],
-  ['Browser agents', ['no', 'yes', 'no', 'part', 'part']],
+  ['ChatGPT desktop', ['no', 'yes', 'no', 'no', 'no']],
+  ['Microsoft Copilot', ['part', 'no', 'part', 'part', 'no']],
+  ['Claude computer use', ['part', 'yes', 'no', 'part', 'no']],
+  ['Browser agents', ['no', 'yes', 'no', 'part', 'no']],
   ['AYO', ['yes', 'yes', 'yes', 'yes', 'yes']],
 ]
 
