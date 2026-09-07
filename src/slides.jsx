@@ -405,7 +405,7 @@ function Experience() {
 /* =========================================================
    04 See it work
    ========================================================= */
-const DEMO_VIDEO_ID = '9dawdtLNEYI'
+const DEMO_VIDEO_ID = 'Rjl77uQy98E'
 function SeeItWork() {
   return (
     <Slide>
@@ -826,9 +826,8 @@ const MONTHS = [
   ['M5', 'Decide', 'Retention evidence'],
 ]
 const PROOF = [
-  ['$45', 'Paid CAC or below'],
   ['35%', 'Trial to paid'],
-  ['1,000', 'Paid users'],
+  ['2,000', 'Paid users by M5'],
   ['M5', 'Renewal evidence'],
 ]
 const FULL_TICKET = [
@@ -902,7 +901,6 @@ function TheAsk() {
               <li key={f}>{f}</li>
             ))}
           </ul>
-          <p className="ask__foot">Extendable to $1M based on investor demand.</p>
         </div>
 
         <div className="ask__panel r">
@@ -912,7 +910,7 @@ function TheAsk() {
             <b>$75K</b>
             <span>$15K angel committed · $30K in negotiation</span>
           </div>
-          <div className="stat-strip stat-strip--sm" style={{ '--n': 4 }}>
+          <div className="stat-strip stat-strip--sm" style={{ '--n': 3 }}>
             {PROOF.map(([num, label]) => (
               <div className="stat-strip__item" key={label}>
                 <b>{num}</b>
@@ -920,9 +918,6 @@ function TheAsk() {
               </div>
             ))}
           </div>
-          <p className="ask__foot">
-            Slower progress, but enough to prove the data before a full ticket.
-          </p>
         </div>
       </div>
 
